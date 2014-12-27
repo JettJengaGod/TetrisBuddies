@@ -56,7 +56,6 @@ class NetworkManager:
         # addr is where the information came from
         pickledData, addr = self.socket.recvfrom(4096)
         data = pickle.loads(pickledData)
-        print(data)
 
         # Remember to lock so that we don't run into conflict accessing it
         self.messageLock.acquire()
@@ -73,7 +72,11 @@ class NetworkManager:
             data, addr = self.messageQueue.popleft()
             self.messageLock.release()
 
+            print(data, addr)
+
             command = data[0]
+
+            print(command)
 
             # If the current player is waiting in the Lobby
             if Global.Game.state == 'Lobby':
