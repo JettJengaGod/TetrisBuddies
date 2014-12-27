@@ -13,6 +13,7 @@ STATES
 '''
 
 class Game:
+    isHost = False
     isRunning = True
     roomList = []
 
@@ -43,7 +44,7 @@ class Game:
             Global.player.setName(name)
             print('Hello ' + Global.player.getName() + '!')
             print()
-            print("Current state: Lobby")
+            print("Changed state to Lobby")
             print("Instructions:")
             print("'h' to host a room")
             print("'v' to view available rooms")
@@ -53,13 +54,17 @@ class Game:
 
         elif self.state == 'Lobby':
             key = input("Enter a command: ")
-
             print()
 
             if key == 'h':
                 self.state = 'Hosting'
+                self.isHost = True
 
                 print('You are now hosting a game')
+                print()
+                print("Changed state to Hosting")
+                print("Instructions:")
+                print("'l' to leave as host")
 
             elif key == 'v':
                 Global.NetworkManager.requestRooms()
@@ -70,8 +75,29 @@ class Game:
                 print()
 
             else:
+                print("Invalid command")
+                print()
                 print("Instructions:")
                 print("'h' to host a room")
                 print("'v' to view available rooms")
-                print("'i' for instructions")
-                print("'1' through '0' to join rooms 1 through 10")
+
+        elif self.state == 'Hosting':
+            key = input("Enter a command: ")
+            print()
+            
+            if key == 'l':
+                self.state = 'Lobby'
+                self.isHost = True
+
+                print('You left as host')
+                print()
+                print("Changed state to Lobby")
+                print("Instructions:")
+                print("'h' to host a room")
+                print("'v' to view available rooms")
+
+            else:
+                print("Invalid command")
+                print()
+                print("Instructions:")
+                print("'l' to leave as host")
