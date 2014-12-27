@@ -1,6 +1,5 @@
 # import the pygame module, so you can use it
 import pygame
-import block
 import random
 from pygame.constants import FULLSCREEN
 from block import block_square, block_line, block_lzag, block_rzag, block_rhook,\
@@ -17,24 +16,27 @@ def main():
         for x in range(0,7):
             if(x%2==0):
                 cells[(int)(b.xpos/20+b.squares[x])][(int)(b.ypos/20+b.squares[x+1])]=True
+    
+    def checkCollision(block):
+        pass
                 
     def random_block():#makes a new random block at the starting spot
         x = random.randint(0,6)
         if(x == 0):
-            return block_square
+            return block_square()
         elif(x == 1):
-            return block_line
+            return block_line()
         elif(x == 2):
-            return block_lzag
+            return block_lzag()
         elif(x == 3):
-            return block_rzag
+            return block_rzag()
         elif(x == 4):
-            return block_lhook
+            return block_lhook()
         elif(x == 5):
-            return block_rhook
+            return block_rhook()
         else:
-            return block_t
-    def drawblock(blk): #draws a block taken as a peramater
+            return block_t()
+    def drawblock(blk): #draws a block taken as a parameter
         for x in range(0,7):
             if(x%2==0):
                 screen.blit(image,(blk.xpos+blk.squares[x]*20,blk.ypos+blk.squares[x+1]*20))       
@@ -51,11 +53,12 @@ def main():
     running = True
 
 
-    current = random_block() #creats first controlable block
-    g = gravity()
+    current = random_block() #creates first controlable block
+    g = gravity()#initializes gravity class
     # main loop
     while running:
-        g.fall(current,1)
+        checkCollision(current)
+        g.fall(current,0.7) #current block affected by gravity
         screen.fill((0,0,0)) #clear screen
         drawblock(current); #draws current block
         #draws all placed squares on the grid
@@ -94,8 +97,9 @@ def main():
             current.xpos+=step_x
             keys[3]=False
         elif keys[4]:
-            place(current)
-            current = random_block()
+            pass
+            #place(current)
+            #current = random_block()
             keys[4]=False
         if current.xpos>screen_width-current.width:
             current.xpos=screen_width-current.width
