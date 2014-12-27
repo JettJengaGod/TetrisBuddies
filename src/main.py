@@ -4,35 +4,21 @@ import block
 import random
 from pygame.constants import FULLSCREEN
 from block import block_square, block_line, block_lzag, block_rzag, block_rhook,\
-    block_lhook
+    block_lhook, block_t
 screen_width = 200
 screen_height = 480
 screen = pygame.display.set_mode((screen_width,screen_height))
 # define a main function
 def main():
     cells = [[0 for x in range(25)] for x in range(11)] 
-    def place(b):
+    #2d array of booleans whole grid if it's filled in or not
+    def place(b):#function places a block onto the grid
         for x in range(0,7):
             if(x%2==0):
                 cells[(int)(b.xpos/20+b.squares[x])][(int)(b.ypos/20+b.squares[x+1])]=True
                 
-            
-    # initialize the pygame module
-    pygame.init()
-    pygame.display.set_caption("minimal program")
-    keys = [False, False, False, False,False]
-    # create a surface on screen that has the size of 240 x 180
-    image = pygame.image.load("block.png")
-    screen.blit(image, (20,20))
-    pygame.display.flip()
-    # define the position of the block
-    # how many pixels we move our block each frame
-    step_x = 20
-    step_y = 20
-    running = True
-    # main loop
-    def random_block():
-        x = random.randint(0,5)
+    def random_block():#makes a new random block at the starting spot
+        x = random.randint(0,6)
         if(x == 0):
             return block_square
         elif(x == 1):
@@ -43,24 +29,38 @@ def main():
             return block_rzag
         elif(x == 4):
             return block_lhook
-        else:
+        elif(x == 5):
             return block_rhook
-    def drawblock(blk):
+        else:
+            return block_t
+    def drawblock(blk): #draws a block taken as a peramater
         for x in range(0,7):
             if(x%2==0):
-                screen.blit(image,(blk.xpos+blk.squares[x]*20,blk.ypos+blk.squares[x+1]*20))
-    current = random_block()
+                screen.blit(image,(blk.xpos+blk.squares[x]*20,blk.ypos+blk.squares[x+1]*20))       
+    # initialize the pygame module
+    pygame.init()
+    pygame.display.set_caption("TetrisBuddies")
+    keys = [False, False, False, False,False]
+    # create a surface on screen that has the size of 240 x 180
+    image = pygame.image.load("block.png")
+    # define the position of the block
+    # how many pixels we move our block each frame
+    step_x = 20
+    step_y = 20
+    running = True
+
+
+    current = random_block() #creats first controlable block
+    # main loop
     while running:
-        # event handling, gets all event from the eventqueue
-        screen.fill((0,0,0))
-        drawblock(current);
-        # and update the screen (dont forget that!)
-       
+        screen.fill((0,0,0)) #clear screen
+        drawblock(current); #draws current block
+        #draws all placed squares on the grid
         for x in range(0,10):
             for y in range(0,24):
                 if cells[x][y]==1:
                     screen.blit(image,(20*x,20*y))
-        pygame.display.flip()
+        pygame.display.flip() #updates screen
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key==pygame.K_w:
