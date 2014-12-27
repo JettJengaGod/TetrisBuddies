@@ -19,7 +19,7 @@ class NetworkManager:
         self.host = gethostbyname(gethostname())
 
         # bind() tells the socket to receive messages on port 6969
-        self.socket.bind((self.host, 6969))
+        self.socket.bind(('', 6969))
 
         # Setting some more specific socket options so that
         # we can broadcast messages to all clients in the LAN
@@ -100,13 +100,13 @@ class NetworkManager:
     # Handles processing and sending messages
     def update(self):
         self.processMessages()
-
+ 
     # Broadcasts a message looking for available room info
     def requestRooms(self):
         response = ['LobbyRequest']
         packet = pickle.dumps(response)
         print('sent broadcast')
-        self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
+        self.socket.sendto(bytes(packet), ('255.255.255.255', 6969))
 
 '''
 PACKET

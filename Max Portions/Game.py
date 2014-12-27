@@ -33,6 +33,8 @@ class Game:
             self.update()
 
     def update(self):
+        Global.NetworkManager.update()
+
         print()
         print('--------------------------------------------------------')
         print()
@@ -78,7 +80,7 @@ class Game:
                 print("Invalid command")
                 print()
                 print("Instructions:")
-                print("'h' to host a room")
+                print("'h' to host a room") 
                 print("'v' to view available rooms")
 
         elif self.state == 'Hosting':
