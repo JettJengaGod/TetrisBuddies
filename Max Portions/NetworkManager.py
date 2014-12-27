@@ -56,11 +56,7 @@ class NetworkManager:
         # addr is where the information came from
         pickledData, addr = self.socket.recvfrom(4096)
         data = pickle.loads(pickledData)
-        print(addr[0] == self.host)
-
-        # If the addresses are the same, then ignore it and don't bother
-        if addr[0] == self.host:
-            return
+        print(data)
 
         # Remember to lock so that we don't run into conflict accessing it
         self.messageLock.acquire()
@@ -106,6 +102,7 @@ class NetworkManager:
     def requestRooms(self):
         response = ['LobbyRequest']
         packet = pickle.dumps(response)
+        print('sent broadcast')
         self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
 
 '''
