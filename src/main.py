@@ -5,6 +5,7 @@ import random
 from pygame.constants import FULLSCREEN
 from block import block_square, block_line, block_lzag, block_rzag, block_rhook,\
     block_lhook, block_t
+from gravity import gravity
 screen_width = 200
 screen_height = 480
 screen = pygame.display.set_mode((screen_width,screen_height))
@@ -51,8 +52,10 @@ def main():
 
 
     current = random_block() #creats first controlable block
+    g = gravity()
     # main loop
     while running:
+        g.fall(current,1)
         screen.fill((0,0,0)) #clear screen
         drawblock(current); #draws current block
         #draws all placed squares on the grid
