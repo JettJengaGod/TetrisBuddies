@@ -56,6 +56,7 @@ class NetworkManager:
         # addr is where the information came from
         pickledData, addr = self.socket.recvfrom(4096)
         data = pickle.loads(pickledData)
+        print(data)
 
         # Remember to lock so that we don't run into conflict accessing it
         self.messageLock.acquire()
@@ -101,6 +102,7 @@ class NetworkManager:
     def requestRooms(self):
         response = ['LobbyRequest']
         packet = pickle.dumps(response)
+        print('sent broadcast')
         self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
 
 '''
