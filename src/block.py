@@ -228,7 +228,7 @@ class block_t(block):
         elif(self.state==2):
             self.squares=[0,1,1,1,2,1,1,2]
             self.width = 60
-            self.height = 40
+            self.height = 60
         elif(self.state==3):
             self.squares=[1,0,1,1,1,2,0,1]
             self.width = 40
