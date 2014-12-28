@@ -61,7 +61,7 @@ def main():
     running = True
     keys = [False, False, False, False,False, False,False,False]
     # main loop
-    grav = gravity(1000,10)
+    grav = gravity(1000,5)
     saved = None
     while running:
         if checkCol(current)==False:
