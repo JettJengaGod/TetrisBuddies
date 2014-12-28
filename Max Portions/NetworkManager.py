@@ -132,7 +132,7 @@ class NetworkManager:
                         if room == data[1]:
                             return
                     # Add to the list of rooms
-                    Global.Game.getRoomList().append(data, addr[0])
+                    Global.Game.getRoomList().append((data, addr[0]))
 
             # If the current player is hosting
             elif Global.Game.getState() == 'Hosting':
