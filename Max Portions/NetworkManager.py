@@ -105,7 +105,7 @@ class NetworkManager:
             # If he gets a request for information then send it
             elif command == 'LobbyRequest':
                 # If the current player is hosting
-                elif Global.Game.getState() == 'Hosting':
+                if Global.Game.getState() == 'Hosting':
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
                     self.socket.sendto(bytes(packet), addr)
@@ -114,7 +114,7 @@ class NetworkManager:
             # If he gets a join request, then move to challenge
             elif command == 'LobbyChallenge':
                 # If the current player is hosting
-                elif Global.Game.getState() == 'Hosting':
+                if Global.Game.getState() == 'Hosting':
                     self.messageQueue.append((data, addr))
                     _thread.interrupt_main()
 
