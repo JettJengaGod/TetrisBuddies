@@ -103,7 +103,7 @@ class Game:
                 response = ['LobbyRequest']
                 packet = pickle.dumps(response)
                 Global.NetworkManager.getSocket().sendto(bytes(packet), ('<broadcast>', 6969))
-                print('Broadcasted packet', response, addr)
+                print('Broadcasted packet', response)
 
             # Else display instructions
             else:
@@ -150,12 +150,12 @@ class Game:
                             command = data[0]
 
                             # If host rejects, then we just return to normal lobby activity
-                            if command == 'HostReject':
+                            if command == 'HostingReject':
                                 print('The host rejected your challenge')
                                 print()
                                 return
                             # Else we start playing the game
-                            elif command == 'HostAccept':
+                            elif command == 'HostingAccept':
                                 print('The host accepted your challenge')
                                 print()
                                 self.state = 'Playing'
