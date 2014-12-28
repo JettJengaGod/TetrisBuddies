@@ -10,13 +10,15 @@ class cells:
         for x in range(col+1):
             self.filled[x][row]=1
     def rowFilled(self):
-        for y in range (self.row,0,-1):
-            for x in range(self.col+1):
+        print("*")
+        for y in range (self.row-1,0,-1):
+            for x in range(self.col):
                 if self.filled[x][y]!=1:
                     break
-                if x == self.col:
+                if x == self.col-1:
                     self.clear(y)
     def clear(self,y):
+        print("**")
         for x in range(self.col+1):
             self.filled[x][y] = 0
             self.image[x][y] = self.default
