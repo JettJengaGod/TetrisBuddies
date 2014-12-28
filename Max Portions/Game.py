@@ -246,74 +246,71 @@ class Game:
                 return
 
         elif self.state == 'Playing':
-            try:
-                # Every loop we check and see if we are still in communication with opponent
-                self.connectionTTL += self.connectionClock.tick()
+            # Every loop we check and see if we are still in communication with opponent
+            self.connectionTTL += self.connectionClock.tick()
 
-                # If we aren't, then change our state after 10 seconds depending if we are a host
-                if self.connectionTTL >= 10000:
+            # If we aren't, then change our state after 10 seconds depending if we are a host
+            if self.connectionTTL >= 10000:
+                if self.isHost:
+                    self.state = 'Hosting'
+                    print('Lost connection with challenger')
+                    print()
+                    print('Changed state to Hosting')
+                    print("Instructions:")
+                    print("'Esc' to leave as host")
+                else:
+                    self.state = 'Lobby'
+                    print('Lost connection with host')
+                    print()
+                    print('Changed state to Lobby')
+                    print("Instructions:")
+                    print("'h' to host a room")
+                    print("'v' to view available rooms")
+                    print("'0', '1', '2', ... to join a room number")
+
+            # If playing, continuously send information to other person
+            # TODO: Send gameboard
+            response = ['PlayingWin']
+            packet = pickle.dumps(response)
+            Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+            print('Sent packet', response, Global.opponent.getAddr())
+
+            data = None
+            addr = None
+
+            # If we have a PlayingWin or PlayingLose message, then we deal with it here
+            if Global.NetworkManager.getMessageQueue():
+                Global.NetworkManager.getMessageLock().acquire()
+                data, addr = Global.NetworkManager.getMessageQueue().popleft()
+                Global.NetworkManager.getMessageLock().release()
+
+                command = data[0]
+
+                if command == 'PlayingWin':
+                    self.state = 'Result'
+                    print('You lost!')
+                    print()
+                    print('Switched state to Result')
+                    print('Instructions:')
                     if self.isHost:
-                        self.state = 'Hosting'
-                        print('Lost connection with challenger')
-                        print()
-                        print('Changed state to Hosting')
-                        print("Instructions:")
+                        print("'Enter' to play again")
                         print("'Esc' to leave as host")
                     else:
-                        self.state = 'Lobby'
-                        print('Lost connection with host')
-                        print()
-                        print('Changed state to Lobby')
-                        print("Instructions:")
-                        print("'h' to host a room")
-                        print("'v' to view available rooms")
-                        print("'0', '1', '2', ... to join a room number")
-
-                # If playing, continuously send information to other person
-                # TODO: Send gameboard
-                response = ['PlayingWin']
-                packet = pickle.dumps(response)
-                Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                print('Sent packet', response, Global.opponent.getAddr())
-
-            # Interrupt if we get a PlayingWin or PlayingLose packet
-            except KeyboardInterrupt:
-                data = None
-                addr = None
-
-                # Block until we get the right message in the queue
-                while Global.NetworkManager.getMessageQueue():
-                    Global.NetworkManager.getMessageLock().acquire()
-                    data, addr = Global.NetworkManager.getMessageQueue().popleft()
-                    Global.NetworkManager.getMessageLock().release()
-
-                    command = data[0]
-
-                    if command == 'PlayingWin':
-                        self.state = 'Result'
-                        print('You lost!')
-                        print()
-                        print('Switched state to Result')
-                        print('Instructions:')
-                        if self.isHost:
-                            print("'Enter' to play again")
-                            print("'Esc' to leave as host")
-                        else:
-                            print("'c' to challenge host")
-                            print("'l' to leave to lobby")
-                        return
-                    elif command == 'PlayingLose':
-                        self.state = 'Result'
-                        print('You won!')
-                        print()
-                        print('Switched state to Result')
-                        print('Instructions:')
-                        if self.isHost:
-                            print("'Enter' to play again")
-                            print("'Esc' to leave as host")
-                        return
-                    else:
-                        continue
+                        print("'c' to challenge host")
+                        print("'l' to leave to lobby")
+                    return
+                elif command == 'PlayingLose':
+                    self.state = 'Result'
+                    print('You won!')
+                    print()
+                    print('Switched state to Result')
+                    print('Instructions:')
+                    if self.isHost:
+                        print("'Enter' to play again")
+                        print("'Esc' to leave as host")
+                    return
+                else:
+                    continue
 
         elif self.state == 'Result':
             pass

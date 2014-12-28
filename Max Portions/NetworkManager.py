@@ -117,19 +117,6 @@ class NetworkManager:
                     self.messageQueue.append((data, addr))
                     _thread.interrupt_main()
 
-            # If the sender tells the receiver that he lost
-            elif command == 'PlayingLose':
-                # If the current player is playing
-                if Global.Game.getState() == 'Playing':
-                    self.messageQueue.append((data, addr))
-                    _thread.interrupt_main()
-                    
-            elif command == 'PlayingWin':
-                # If the current player is playing
-                if Global.Game.getState() == 'Playing':
-                    self.messageQueue.append((data, addr))
-                    _thread.interrupt_main()
-
             # If a gameboard update comes in
             elif command == 'PlayingUpdate':
                 # If the current player is playing
