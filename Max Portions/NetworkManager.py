@@ -19,8 +19,8 @@ data[0]: command
     LobbyRequest - Tells the host receiver to give the sender info
     LobbyChallenge - Tells the host receiver that the sender is attempting to join
 
-    HostAccept - Tells the joining receiver that the host accepted challenge
-    HostReject - Tells the joining receiver that the host rejected challenge
+    HostingAccept - Tells the joining receiver that the host accepted challenge
+    HostingReject - Tells the joining receiver that the host rejected challenge
 '''
 
 # Handles basically all the networking things

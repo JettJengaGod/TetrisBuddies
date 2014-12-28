@@ -135,7 +135,6 @@ class Game:
                     packet = pickle.dumps(response)
 
                     # Send a join request
-                    print(Global.opponent.getAddr())
                     Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
                     print('Sent packet', response, Global.opponent.getAddr())
 
@@ -147,6 +146,7 @@ class Game:
                             data, addr = Global.NetworkManager.getMessageQueue().popleft()
                             Global.NetworkManager.messageLock.release()
 
+                            print('data', data)
                             command = data[0]
 
                             # If host rejects, then we just return to normal lobby activity
@@ -216,7 +216,7 @@ class Game:
                     response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
                     if response == 'y':
                         validInput = True
-                        response = ['HostAccept']
+                        response = ['HostingAccept']
                         packet = pickle.dumps(response)
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
@@ -227,7 +227,7 @@ class Game:
 
                     elif response == 'n':
                         validInput = True
-                        response = ['HostReject']
+                        response = ['HostingReject']
                         packet = pickle.dumps(response)
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
