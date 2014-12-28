@@ -1,10 +1,28 @@
+import random
+
 class block:
-    def __init__(self,arrangement,x,y):
+    def __init__(self,x,y):
+        '''initializes a random block at a specific position x,y,
+        randomizes which "block" as well as which rotation state it begins in'''
         self._x = x
         self._y = y
-        self._state = 0
-        self._arrangement = arrangement
-        self._array = arrangement(self._state)
+        self._state = random.randint(0,3)
+        r =  random.randint(0,6)
+        if r == 0:
+            self._arrangement = block_T
+        if r == 1:
+            self._arrangement = block_LL
+        if r == 2:
+            self._arrangement = block_LR
+        if r == 3:
+            self._arrangement = block_ZL
+        if r == 4:
+            self._arrangement = block_ZR
+        if r == 5:
+            self._arrangement = block_S
+        if r == 6:
+            self._arrangement = block_Sq
+        self._array = self._arrangement(self._state)
     
     def rotate(self,LR):
         if LR == 'L':
@@ -13,103 +31,103 @@ class block:
                 
             else:
                 self._state = 3
-            self._arrangement = self._arrangement(self._state)
+            self._array = self._arrangement(self._state)
         if LR == 'R':
             if self._state < 3:
                 self._state += 1
                 
             else:
                 self._state = 0
-            self._arrangement = self._arrangement(self._state)
+            self._array = self._arrangement(self._state)
         
 
 def block_T(state):
     if state == 0:
         block_T0 = [
-         [1,0,0,0]
-        ,[1,1,0,0]
-        ,[1,0,0,0]
+         [0,1,0,0]
+        ,[0,1,1,0]
+        ,[0,1,0,0]
         ,[0,0,0,0]]
         return block_T0
     if state == 1:
         block_T1 = [
-         [1,1,1,0]
+         [0,0,0,0]
+        ,[1,1,1,0]
         ,[0,1,0,0]
-        ,[0,0,0,0]
         ,[0,0,0,0]]
         return block_T1
     if state == 2:
         block_T2 = [
-         [0,0,0,0]
+         [0,1,0,0]
+        ,[1,1,0,0]
         ,[0,1,0,0]
-        ,[1,1,1,0]
         ,[0,0,0,0]]
         return block_T2
     if state == 3:
         block_T3 = [
-         [0,0,1,0]
-        ,[0,1,1,0]
-        ,[0,0,1,0]
+         [0,1,0,0]
+        ,[1,1,1,0]
+        ,[0,0,0,0]
         ,[0,0,0,0]]
         return block_T3
         
 def block_LL(state):
     if state == 0:
         block_LL0 = [
-         [1,0,0,0]
-        ,[1,0,0,0]
-        ,[1,1,0,0]
+         [0,1,0,0]
+        ,[0,1,0,0]
+        ,[0,1,1,0]
         ,[0,0,0,0]]
         return block_LL0
     if state == 1:
         block_LL1 = [
-         [1,1,1,0]
+         [0,0,0,0]
+        ,[1,1,1,0]
         ,[1,0,0,0]
-        ,[0,0,0,0]
         ,[0,0,0,0]]
         return block_LL1
     if state == 2:
         block_LL2 = [
-         [0,1,1,0]
-        ,[0,0,1,0]
-        ,[0,0,1,0]
+         [1,1,0,0]
+        ,[0,1,0,0]
+        ,[0,1,0,0]
         ,[0,0,0,0]]
         return block_LL2
     if state == 3:
         block_LL3 = [
-         [0,0,0,0]
-        ,[0,0,1,0]
+         [0,0,1,0]
         ,[1,1,1,0]
+        ,[0,0,0,0]
         ,[0,0,0,0]]
         return block_LL3
         
 def block_LR(state):
     if state == 0:
         block_LR0 = [
-         [0,0,1,0]
-        ,[0,0,1,0]
-        ,[0,1,1,0]
+         [0,1,0,0]
+        ,[0,1,0,0]
+        ,[1,1,0,0]
         ,[0,0,0,0]]
         return block_LR0
     if state == 1:
         block_LR1 = [
-         [0,0,0,0]
-        ,[1,0,0,0]
+         [1,0,0,0]
         ,[1,1,1,0]
+        ,[0,0,0,0]
         ,[0,0,0,0]]
         return block_LR1
     if state == 2:
         block_LR2 = [
-         [1,1,0,0]
-        ,[1,0,0,0]
-        ,[1,0,0,0]
+         [0,1,1,0]
+        ,[0,1,0,0]
+        ,[0,1,0,0]
         ,[0,0,0,0]]
         return block_LR2
     if state == 3:
         block_LR3 = [
-         [1,1,1,0]
+         [0,0,0,0]
+        ,[1,1,1,0]
         ,[0,0,1,0]
-        ,[0,0,0,0]
         ,[0,0,0,0]]
         return block_LR3
 
