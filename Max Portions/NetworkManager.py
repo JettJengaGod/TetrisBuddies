@@ -57,10 +57,6 @@ class NetworkManager:
             # addr is where the information came from
             pickledData, addr = self.socket.recvfrom(4096)
             data = pickle.loads(pickledData)
-            
-            # We ignore any packets that are sent from ourselves
-            if addr[0] == host:
-                return
 
             # Remember to lock so that we don't run into conflict accessing it
             self.messageLock.acquire()
@@ -78,7 +74,6 @@ class NetworkManager:
             self.messageLock.release()
 
             print()
-            print('Processed packet: ')
             print(data, addr)
 
             command = data[0]

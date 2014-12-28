@@ -56,7 +56,7 @@ class Game:
             print("Instructions:")
             print("'h' to host a room")
             print("'v' to view available rooms")
-            print("'1' through '0' to join rooms 1 through 10")
+            print("'1' through '9' to join rooms 1 through 9")
             
             self.state = 'Lobby'
 
@@ -76,8 +76,8 @@ class Game:
 
             elif key == 'v':
                 Global.NetworkManager.requestRooms()
-
                 print('Rooms:')
+                print(self.roomList)
                 for roomIndex in range(len(self.roomList)):
                     print('Room ' + roomIndex + '- ' + self.roomList[roomIndex])
                 print()
@@ -103,6 +103,7 @@ class Game:
                 print("Instructions:")
                 print("'h' to host a room")
                 print("'v' to view available rooms")
+                print("'1' through '9' to join rooms 1 through 9")
 
             else:
                 print("Invalid command")
