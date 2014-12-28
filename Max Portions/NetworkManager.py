@@ -94,31 +94,32 @@ class NetworkManager:
             # they need to be responded immediately. If we put these sections in
             # the main thread they may get blocked when the Game() update() is waiting 
             # for input
-            # If the current player is waiting in the Lobby
-            if Global.Game.getState() == 'Lobby':
-                # If new hosting info comes in
-                if command == 'HostingInfo':
+
+            # If new hosting info comes in
+            if command == 'HostingInfo':
+                # If the current player is waiting in the Lobby
+                if Global.Game.getState() == 'Lobby':
                     # Add username to the list of rooms
                     Global.Game.getRoomList().append((data[1], addr[0]))
 
-            # If the current player is hosting
-            elif Global.Game.getState() == 'Hosting':
-                # If he gets a request for information then send it
-                if command == 'LobbyRequest':
+            # If he gets a request for information then send it
+            elif command == 'LobbyRequest':
+                # If the current player is hosting
+                elif Global.Game.getState() == 'Hosting':
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
                     self.socket.sendto(bytes(packet), addr)
                     print('Sent packet:', response, addr)
 
-                # If he gets a join request, then move to challenge
-                elif command == 'LobbyChallenge':
+            # If he gets a join request, then move to challenge
+            elif command == 'LobbyChallenge':
+                # If the current player is hosting
+                elif Global.Game.getState() == 'Hosting':
                     self.messageQueue.append((data, addr))
                     _thread.interrupt_main()
 
-            # Else we put it onto the messageQueue
+            # Else we put it onto the messageQueue            
             else:
                 self.messageQueue.append((data, addr))
-
-            print(self.messageQueue)
 
             self.messageLock.release()

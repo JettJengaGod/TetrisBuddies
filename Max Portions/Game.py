@@ -148,7 +148,6 @@ class Game:
                             data, addr = Global.NetworkManager.getMessageQueue().popleft()
                             Global.NetworkManager.getMessageLock().release()
 
-                            print('data', data)
                             command = data[0]
 
                             # If host rejects, then we just return to normal lobby activity
