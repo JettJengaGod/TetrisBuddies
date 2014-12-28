@@ -10,8 +10,6 @@ def main():
     row = 20
     sS = 32
     grid = cells(col,row)
-    for x in range(col+1):
-        grid.filled[x][row]=1
     def drawBlock(blk):
         for x in range(0,4):
             for y in range(0,4):
@@ -28,6 +26,7 @@ def main():
                 if blk.array[x][y]:
                     grid.filled[blk.x+x][blk.y+y]=1
                     grid.image[blk.x+x][blk.y+y]=blk.image
+        grid.rowFilled()
     def checkCol(blk):
         for y in range(row+1):
             for x in range(4):
