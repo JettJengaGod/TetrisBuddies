@@ -4,8 +4,8 @@ class block:
     def __init__(self,x,y):
         '''initializes a random block at a specific position x,y,
         randomizes which "block" as well as which rotation state it begins in'''
-        self._x = x
-        self._y = y
+        self.x = x
+        self.y = y
         self._state = random.randint(0,3)
         r =  random.randint(0,6)
         if r == 0:
@@ -22,23 +22,23 @@ class block:
             self._arrangement = block_S
         if r == 6:
             self._arrangement = block_Sq
-        self._array = self._arrangement(self._state)
+        self.array = self._arrangement(self._state)
     
     def rotate(self,LR):
         if LR == 'L':
-            if self._state < 0:
+            if self._state > 0:
                 self._state -= 1
                 
             else:
                 self._state = 3
-            self._array = self._arrangement(self._state)
+            self.array = self._arrangement(self._state)
         if LR == 'R':
             if self._state < 3:
                 self._state += 1
                 
             else:
                 self._state = 0
-            self._array = self._arrangement(self._state)
+            self.array = self._arrangement(self._state)
         
 
 def block_T(state):
