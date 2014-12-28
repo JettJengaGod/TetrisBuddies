@@ -56,7 +56,7 @@ class NetworkManager:
         # addr is where the information came from
         pickledData, addr = self.socket.recvfrom(4096)
         data = pickle.loads(pickledData)
-        print()
+        print('checking')
 
         # Remember to lock so that we don't run into conflict accessing it
         self.messageLock.acquire()
@@ -93,7 +93,7 @@ class NetworkManager:
                 if command == 'LobbyRequest':
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
-                    socket.sendto(bytes(response, 'utf-8'), (addr, 6969))
+                    socket.sendto(bytes(packet), addr)
                 # If he gets a join request, then move to challenge
                 elif command == 'JoiningChallenge':
                     Global.Game.state = 'Challenge'
