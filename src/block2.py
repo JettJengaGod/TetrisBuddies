@@ -2,11 +2,11 @@ import random
 import pygame
 
 class block:
-    def __init__(self,x,y):
+    def __init__(self):
         '''initializes a random block at a specific position x,y,
         randomizes which "block" as well as which rotation state it begins in'''
-        self.x = x
-        self.y = y
+        self.x = 12
+        self.y = 3
         self._state = random.randint(0,3)
         r =  random.randint(0,6)
         if r == 0:
@@ -25,7 +25,14 @@ class block:
             self._arrangement = block_Sq
         self.image = pygame.image.load("block"+str(r)+".png")
         self.array = self._arrangement(self._state)
-    
+    def moveIn(self):
+        self.x = 1
+        self.y = 1
+        return self
+    def save(self):
+        self.x = 12
+        self.y = 8
+        return self
     def rotate(self,LR):
         if LR == 'L':
             if self._state > 0:

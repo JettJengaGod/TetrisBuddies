@@ -48,14 +48,16 @@ def main():
                     if grid.filled[side+blk.x+a][blk.y+b]:
                         return True
         return False
-    current = block(1,1)
+    next = block()
+    current = next.moveIn()
+    next = block()
     # initialize the pygame module
     pygame.init()
     # load and set the logo
     
     pygame.display.set_caption("TetrisBuddies")
     # create a surface on screen that has the size of 240 x 180
-    screen = pygame.display.set_mode((col*sS,row*sS))
+    screen = pygame.display.set_mode((col*sS*2,row*sS))
     
     # define a variable to control the main loop
     running = True
@@ -69,10 +71,13 @@ def main():
         else:
             swapped = False
             place(current)
-            current = block(1,1)
+            current = next.moveIn()
 
         screen.fill((0,0,0)) #clear screen
-        drawBlock(current); #draws current block
+        drawBlock(current) #draws current block
+        drawBlock(next)
+        if(saved!=None):
+            drawBlock(saved)
         drawgrid()
         pygame.display.flip() #updates screen
         # event handling, gets all event from the eventqueue
@@ -107,7 +112,8 @@ def main():
             else:
                 swapped = False
                 place(current)
-                current = block(1,1)
+                current = next
+                next = block()
             keys[1]=False
         elif keys[2]:
             if (current.x+current.left()>0
@@ -123,26 +129,27 @@ def main():
             current.rotate("L")
             keys[4]=False
         elif keys[5]:
-            current = block(1,1)
+            current = next.moveIn()
+            next = block()
             keys[5] = False
         elif keys[6]:
             hardDrop(current)
             swapped = False
-            current = block(1,1)
+            current = next.moveIn()
+            next = block()
             keys[6]=False
         elif keys[7]:
-            print(swapped)
             if saved == None:
-                saved = current
-                current = block(1,1)
+                saved = current.save()
+                current = next.moveIn()
+                next = block()
                 swapped = True
             elif swapped==False:
-                print('dolan')
                 temp = current
-                current = saved
+                current = saved.moveIn()
                 current.x = 1
                 current.y = 1
-                saved = temp
+                saved = temp.save()
                 swapped = True
             keys[7]=False
     
