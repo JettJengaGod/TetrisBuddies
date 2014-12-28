@@ -1,4 +1,5 @@
 import random
+import pygame
 
 class block:
     def __init__(self,x,y):
@@ -6,6 +7,7 @@ class block:
         randomizes which "block" as well as which rotation state it begins in'''
         self.x = x
         self.y = y
+        
         self._state = random.randint(0,3)
         r =  random.randint(0,6)
         if r == 0:
@@ -22,6 +24,7 @@ class block:
             self._arrangement = block_S
         if r == 6:
             self._arrangement = block_Sq
+        self.image = pygame.image.load("block"+str(r)+".png")
         self.array = self._arrangement(self._state)
     
     def rotate(self,LR):

@@ -2,35 +2,37 @@
 import pygame
 from block2 import block
 from gravity2 import gravity
+from cells import cells
 # define a main function
 
 def main():
     col = 10
     row = 20
     sS = 32
-    cells =[[0 for x in range(row+1)] for x in range(col+1)] 
+    grid = cells(col,row)
     for x in range(col+1):
-        cells[x][row]=1
+        grid.filled[x][row]=1
     def drawBlock(blk):
         for x in range(0,4):
             for y in range(0,4):
                 if blk.array[x][y]:
-                    screen.blit(image,((x+blk.x)*sS,(y+blk.y)*sS))
-    def drawCells():
+                    screen.blit(blk.image,((x+blk.x)*sS,(y+blk.y)*sS))
+    def drawgrid():
         for x in range (col+1):
             for y in range(row+1):
-                if cells[x][y]:
-                    screen.blit(image,(x*sS,y*sS))
+                if grid.filled[x][y]:
+                    screen.blit(grid.image[x][y],(x*sS,y*sS))
     def place(blk):
         for x in range(0,4):
             for y in range(0,4):
                 if blk.array[x][y]:
-                    cells[blk.x+x][blk.y+y]=True
+                    grid.filled[blk.x+x][blk.y+y]=1
+                    grid.image[blk.x+x][blk.y+y]=blk.image
     def checkCol(blk):
         for y in range(row+1):
             for x in range(4):
                 if blk.bottom()[x]!=-1:
-                    if cells[blk.x+x][blk.y+blk.bottom()[x]+1]:
+                    if grid.filled[blk.x+x][blk.y+blk.bottom()[x]+1]:
                         return True
         return False        
     def hardDrop(blk):
@@ -43,15 +45,14 @@ def main():
         for a in range (4):
             for b in range (4):
                 if blk.array[a][b]:
-                    if cells[side+blk.x+a][blk.y+b]:
+                    if grid.filled[side+blk.x+a][blk.y+b]:
                         return True
         return False
     current = block(1,1)
     # initialize the pygame module
     pygame.init()
     # load and set the logo
-    image = pygame.image.load("blockB.png")
-    pygame.display.set_icon(image)
+    
     pygame.display.set_caption("TetrisBuddies")
     # create a surface on screen that has the size of 240 x 180
     screen = pygame.display.set_mode((col*sS,row*sS))
@@ -70,7 +71,7 @@ def main():
 
         screen.fill((0,0,0)) #clear screen
         drawBlock(current); #draws current block
-        drawCells()
+        drawgrid()
         pygame.display.flip() #updates screen
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
