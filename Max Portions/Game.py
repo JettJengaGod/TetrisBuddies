@@ -141,7 +141,9 @@ class Game:
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
                     while timer <= 10000:
                         timer += self.clock.tick()
+                        print('.')
                         while Global.NetworkManager.getMessageQueue():
+                            print('XXXXXXXXXXXXXXXXXXXXXX')
                             Global.NetworkManager.messageLock.acquire()
                             data, addr = Global.NetworkManager.getMessageQueue().popleft()
                             Global.NetworkManager.messageLock.release()
