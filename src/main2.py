@@ -108,7 +108,7 @@ def main():
                 current.y+=1
             else:
                 grid.swapped = False
-                grid.place(current)
+                current = grid.place(current)
             keys[1]=False
         elif keys[2]:
             if (current.x+current.left()>0
@@ -145,7 +145,7 @@ def main():
                 saved = temp.save()
                 grid.swapped = True
             keys[7]=False
-        grav.fall(current,grid)
+        current = grav.fall(current,grid)
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
 if __name__=="__main__":
