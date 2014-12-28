@@ -6,7 +6,7 @@ from cells import cells
 # define a main function
 
 def main():
-    swapped = False
+    
     col = 10
     row = 20
     sS = 32
@@ -22,7 +22,7 @@ def main():
         ghostBlock.image.convert_alpha()
         ghostBlock.image.set_alpha(120)
         while 1:
-            if checkCol(ghostBlock):
+            if grid.checkCol(ghostBlock):
                 break
             else:
                 ghostBlock.y += 1
@@ -36,25 +36,11 @@ def main():
                 if grid.filled[x][y]:
                     grid.image[x][y].set_alpha(255)
                     screen.blit(grid.image[x][y],(x*sS,y*sS))
-    def place(blk):
-        for x in range(0,4):
-            for y in range(0,4):
-                if blk.array[x][y]:
-                    grid.filled[blk.x+x][blk.y+y]=1
-                    grid.image[blk.x+x][blk.y+y]=blk.image
-        grid.rowFilled()
-    def checkCol(blk):
-        for y in range(row+1):
-            for x in range(4):
-                if blk.bottom()[x]!=-1:
-                    if grid.filled[blk.x+x][blk.y+blk.bottom()[x]+1]:
-                        return True
-        return False        
     def hardDrop(blk):
         while 1:
-            if(checkCol(blk)):
-                place(blk)
-                return
+            if(grid.checkCol(blk)):
+                blk = grid.place(blk)
+                return blk
             blk.y+=1  
     def sideCol(blk,side):
         for a in range (4):
@@ -63,9 +49,8 @@ def main():
                     if grid.filled[side+blk.x+a][blk.y+b]:
                         return True
         return False
-    next = block()
-    current = next.moveIn()
-    next = block()
+    current = grid.next.moveIn()
+    grid.next = block()
     # initialize the pygame module
     pygame.init()
     # load and set the logo
@@ -81,13 +66,13 @@ def main():
     grav = gravity(1000,5)
     saved = None
     while running:
-        
+        print(current.y)
         screen.fill((0,0,0)) #clear screen
         bkg =pygame.image.load("MaxFaggotry.png")
         screen.blit(bkg,(col*sS,0))
         drawBlock(current) #draws current block
         drawGhost(current)
-        drawBlock(next)
+        drawBlock(grid.next)
         if(saved!=None):
             drawBlock(saved)
         drawgrid()
@@ -119,13 +104,11 @@ def main():
             current.rotate("R")
             keys[0]=False
         elif keys[1]:
-            if checkCol(current)==False:
+            if grid.checkCol(current)==False:
                 current.y+=1
             else:
-                swapped = False
-                place(current)
-                current = next
-                next = block()
+                grid.swapped = False
+                grid.place(current)
             keys[1]=False
         elif keys[2]:
             if (current.x+current.left()>0
@@ -141,35 +124,28 @@ def main():
             current.rotate("L")
             keys[4]=False
         elif keys[5]:
-            current = next.moveIn()
-            next = block()
+            current = grid.next.moveIn()
+            grid.next = block()
             keys[5] = False
         elif keys[6]:
-            hardDrop(current)
-            swapped = False
-            current = next.moveIn()
-            next = block()
+            current = hardDrop(current)
+            grid.swapped = False
             keys[6]=False
         elif keys[7]:
             if saved == None:
                 saved = current.save()
-                current = next.moveIn()
-                next = block()
-                swapped = True
-            elif swapped==False:
+                current = grid.next.moveIn()
+                grid.next = block()
+                grid.swapped = True
+            elif grid.swapped==False:
                 temp = current
                 current = saved.moveIn()
                 current.x = 1
                 current.y = 1
                 saved = temp.save()
-                swapped = True
+                grid.swapped = True
             keys[7]=False
-        if checkCol(current)==False:
-            grav.fall(current)
-        else:
-            swapped = False
-            place(current)
-            current = next.moveIn()
+        grav.fall(current,grid)
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
 if __name__=="__main__":
