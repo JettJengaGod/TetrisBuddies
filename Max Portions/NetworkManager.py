@@ -74,6 +74,7 @@ class NetworkManager:
             self.messageLock.release()
 
             print()
+            print('Processed packet:')
             print(data, addr)
 
             command = data[0]
@@ -91,7 +92,7 @@ class NetworkManager:
                 if command == 'LobbyRequest':
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
-                    socket.sendto(bytes(packet), addr)
+                    self.socket.sendto(bytes(packet), addr)
                 # If he gets a join request, then move to challenge
                 elif command == 'JoiningChallenge':
                     Global.Game.state = 'Challenge'
@@ -105,7 +106,7 @@ class NetworkManager:
     def requestRooms(self):
         response = ['LobbyRequest']
         packet = pickle.dumps(response)
-        print('sent broadcast')
+        print('Sent broadcast')
         self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
 
 '''
