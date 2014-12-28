@@ -39,6 +39,33 @@ class block:
             else:
                 self._state = 0
             self.array = self._arrangement(self._state)
+    
+    def left(self):
+        count = 0
+        for a in self.array:
+            if a[count] == 1:
+                return count
+            count += 1
+    
+    def right(self):
+        count = 3
+        for a in self.array:
+            if a[count] == 1:
+                return count
+            count -= 1
+    
+    def bottom(self):
+        bottoms = []
+        max = -1
+        for a in range(0,4):
+            for b in range(0,4):
+                if self.array[a][b]:
+                    if max < b:
+                        max = b
+            bottoms.append(max)
+            max = -1
+        return bottoms
+                
         
 
 def block_T(state):
