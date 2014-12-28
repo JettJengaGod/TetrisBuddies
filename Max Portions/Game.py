@@ -144,7 +144,7 @@ class Game:
                         timer += self.clock.tick()
                         if Global.NetworkManager.getMessageQueue():
                             Global.NetworkManager.messageLock.acquire()
-                            pickleData, addr = Global.NetworkManager.getMessageQueue().popLeft()
+                            pickledData, addr = Global.NetworkManager.getMessageQueue().popleft()
                             Global.NetworkManager.messageLock.release()
 
                             data = pickle.loads(pickledData)
@@ -200,11 +200,12 @@ class Game:
 
                 data = None
                 addr = None
+                pickledData = None
 
                 # Block until we get the right message in the queue
                 while Global.NetworkManager.getMessageQueue():
                     Global.NetworkManager.messageLock.acquire()
-                    pickledData, addr = Global.NetworkManager.getMessageQueue().popLeft()
+                    pickledData, addr = Global.NetworkManager.getMessageQueue().popleft()
                     Global.NetworkManager.messageLock.release()
 
                     data = pickle.loads(pickledData)
