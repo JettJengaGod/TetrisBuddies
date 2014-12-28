@@ -269,13 +269,14 @@ class Game:
                         print("'v' to view available rooms")
                         print("'0', '1', '2', ... to join a room number")
 
-                    # If playing, continuously send information to other person
-                    # TODO: Send gameboard
-                    response = ['PlayingUpdate']
-                    packet = pickle.dumps(response)
-                    Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                    print('Sent packet', response, Global.opponent.getAddr())
+                # If playing, continuously send information to other person
+                # TODO: Send gameboard
+                response = ['PlayingWin']
+                packet = pickle.dumps(response)
+                Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                print('Sent packet', response, Global.opponent.getAddr())
 
+            # Interrupt if we get a PlayingWin or PlayingLose packet
             except KeyboardInterrupt:
                 data = None
                 addr = None
