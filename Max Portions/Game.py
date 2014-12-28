@@ -279,7 +279,7 @@ class Game:
             addr = None
 
             # If we have a PlayingWin or PlayingLose message, then we deal with it here
-            if Global.NetworkManager.getMessageQueue():
+            while Global.NetworkManager.getMessageQueue():
                 Global.NetworkManager.getMessageLock().acquire()
                 data, addr = Global.NetworkManager.getMessageQueue().popleft()
                 Global.NetworkManager.getMessageLock().release()
