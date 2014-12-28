@@ -163,6 +163,9 @@ class Game:
                             elif command == 'HostingAccept':
                                 print('The host accepted your challenge')
                                 print()
+
+                                self.connectionClock = pygame.time.Clock()
+                                self.connectionClock.tick()
                                 self.state = 'Playing'
                                 return
                             else:
@@ -227,7 +230,10 @@ class Game:
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
 
-                        Global.Game.setState('Playing')
+                        self.connectionClock = pygame.time.Clock()
+                        self.connectionClock.tick()
+
+                        self.state = 'Playing'
                         Global.opponent.setName(data[1])
                         Global.opponent.setAddr(addr[0])
 
@@ -242,7 +248,7 @@ class Game:
         elif self.state == 'Playing':
             try:
                 # Every loop we check and see if we are still in communication with opponent
-                self.connectionTTL += self.clock()
+                self.connectionTTL += self.connectionClock()
 
                 # If we aren't, then change our state after 10 seconds depending if we are a host
                 if self.connectionTTL >= 10000:
