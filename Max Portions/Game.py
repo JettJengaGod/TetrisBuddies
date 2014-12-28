@@ -103,7 +103,7 @@ class Game:
                 response = ['LobbyRequest']
                 packet = pickle.dumps(response)
                 Global.NetworkManager.getSocket().sendto(bytes(packet), ('<broadcast>', 6969))
-                print('Broadcasted packet', response)
+                print('Broadcasted packet', response, addr)
 
             # Else display instructions
             else:
@@ -142,7 +142,7 @@ class Game:
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
                     while timer <= 10000:
                         timer += self.clock.tick()
-                        if Global.NetworkManager.getMessageQueue():
+                        while Global.NetworkManager.getMessageQueue():
                             Global.NetworkManager.messageLock.acquire()
                             data, addr = Global.NetworkManager.getMessageQueue().popleft()
                             Global.NetworkManager.messageLock.release()
@@ -160,6 +160,8 @@ class Game:
                                 print()
                                 self.state = 'Playing'
                                 return
+                            else:
+                                continue
                     
                     print('Challenge request timed out')
 
@@ -208,15 +210,15 @@ class Game:
                     if not data[0] == 'LobbyChallenge':
                         continue
                     else:
-                        return
+                        break
 
                 while not validInput:
                     response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
                     if response == 'y':
-                        invalidInput = True
+                        validInput = True
                         response = ['HostAccept']
                         packet = pickle.dumps(response)
-                        Global.socket.sendto(bytes(packet), addr)
+                        Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
 
                         Global.Game.setState('Playing')
@@ -224,10 +226,10 @@ class Game:
                         Global.opponent.setAddr(addr[0])
 
                     elif response == 'n':
-                        invalidInput = True
+                        validInput = True
                         response = ['HostReject']
                         packet = pickle.dumps(response)
-                        Global.socket.sendto(bytes(packet), addr)
+                        Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
                 return
 

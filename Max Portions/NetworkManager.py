@@ -83,7 +83,7 @@ class NetworkManager:
             if self.host == addr[0]:
                 continue
 
-            print('Received packet:', data)
+            print('Received packet:', data, addr)
 
             command = data[0]
 
