@@ -93,8 +93,7 @@ class NetworkManager:
             # These need to be check within the checkForMessages() thread because
             # they need to be responded immediately. If we put these sections in
             # the main thread they may get blocked when the Game() update() is waiting 
-            # for input
-
+            # for input                
             # If new hosting info comes in
             if command == 'HostingInfo':
                 # If the current player is waiting in the Lobby
@@ -117,6 +116,34 @@ class NetworkManager:
                 if Global.Game.getState() == 'Hosting':
                     self.messageQueue.append((data, addr))
                     _thread.interrupt_main()
+
+            # If the sender tells the receiver that he lost
+            elif command == 'PlayingLose':
+                # If the current player is playing
+                if Global.Game.getState() == 'Playing':
+                    self.messageQueue.append((data, addr))
+                    _thread.interrupt_main()
+                    
+            elif command == 'PlayingWin':
+                # If the current player is playing
+                if Global.Game.getState() == 'Playing':
+                    self.messageQueue.append((data, addr))
+                    _thread.interrupt_main()
+
+            # If a gameboard update comes in
+            elif command == 'PlayingUpdate':
+                # If the current player is playing
+                if Global.Game.getState() == 'Playing':
+                    # Reset the connectionTTL
+                    Global.Game.connectionTTL = 0
+                    # TODO: Update the gameboard info
+
+            # If the player gets sent a line
+            elif command == 'PlayingLine':
+                # If the current player is playing
+                if Global.Game.getState() == 'Playing':
+                    # TODO: Update the gameboard
+                    pass
 
             # Else we put it onto the messageQueue            
             else:
