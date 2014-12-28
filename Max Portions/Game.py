@@ -248,20 +248,20 @@ class Game:
         elif self.state == 'Playing':
             try:
                 # Every loop we check and see if we are still in communication with opponent
-                self.connectionTTL += self.connectionClock()
+                self.connectionTTL += self.connectionClock.tick()
 
                 # If we aren't, then change our state after 10 seconds depending if we are a host
                 if self.connectionTTL >= 10000:
                     if self.isHost:
                         self.state = 'Hosting'
-                        print('Lost connection with opponent')
+                        print('Lost connection with challenger')
                         print()
                         print('Changed state to Hosting')
                         print("Instructions:")
                         print("'Esc' to leave as host")
                     else:
                         self.state = 'Lobby'
-                        print('Lost connection with opponent')
+                        print('Lost connection with host')
                         print()
                         print('Changed state to Lobby')
                         print("Instructions:")
