@@ -1,6 +1,6 @@
 import threading
 import Global
-import pickle # pickle is used 
+import pickle # pickle is used to package objects to be sent through sockets
 from collections import deque
 from socket import *
 
@@ -47,6 +47,8 @@ class NetworkManager:
         self.messageThread.start()
 
     def getSocket(self): return self.socket
+    def getMessageQueue(self): return self.messageQueue
+    def getMessageLock(self): return self.messageLock
 
     # Receives packets(messages) and puts them into queue
     def checkForMessages(self):
@@ -57,6 +59,8 @@ class NetworkManager:
             # addr is where the information came from
             pickledData, addr = self.socket.recvfrom(4096)
             data = pickle.loads(pickledData)
+
+            print('Addresses:',self.host, addr[0])
 
             # Remember to lock so that we don't run into conflict accessing it
             self.messageLock.acquire()
@@ -83,8 +87,13 @@ class NetworkManager:
             if Global.Game.getState() == 'Lobby':
                 # If new hosting info comes in
                 if command == 'HostingInfo':
+                    # Make sure there are no duplicate rooms
+                    for room in Global.Game.getRoomList():
+                        if room == data[1]:
+                            return
+
                     # TODO: Update current rommList information
-                    Global.Game.getRoomList().append(data[1])
+                    Global.Game.getRoomList().append(data, addr[0])
 
             # If the current player is hosting
             elif Global.Game.getState() == 'Hosting':
@@ -93,10 +102,29 @@ class NetworkManager:
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
                     self.socket.sendto(bytes(packet), addr)
+                    print('Sent:', response)
+
                 # If he gets a join request, then move to challenge
-                elif command == 'JoiningChallenge':
-                    Global.Game.state = 'Challenge'
-                    # TODO: Give host choice to accept or reject offer
+                elif command == 'LobbyChallenge':
+                    invalidInput = True
+                    
+                    while invalidInput:
+                        response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
+                        if response == 'y':
+                            invalidInput = True
+                            response = ['HostAccept']
+                            packet = pickle.dumps(response)
+                            self.socket.sendto(bytes(packet), addr)
+
+                            Global.Game.setState('Playing')
+                            Global.opponent.setName(data[1])
+                            Global.opponent.setAddr(addr[0])
+
+                        elif response == 'n':
+                            invalidInput = True
+                            response = ['HostReject']
+                            packet = pickle.dumps(response)
+                            self.socket.sendto(bytes(packet), addr)
 
     # Handles processing and sending messages
     def update(self):
@@ -104,8 +132,12 @@ class NetworkManager:
  
     # Broadcasts a message looking for available room info
     def requestRooms(self):
+        # Reset the roomList so we rid ourselves of duplicates or dead connection
+        Global.Game.roomList = []
+
         response = ['LobbyRequest']
         packet = pickle.dumps(response)
+        
         print('Sent broadcast')
         self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
 
@@ -121,10 +153,10 @@ data[0]: command
     HostingInfo - Gives the receiver the sender's username info
 
     LobbyRequest - Tells the host receiver to give the sender info
-    JoiningChallenge - Tells the host receiver that the sender is attempting to join
+    LobbyChallenge - Tells the host receiver that the sender is attempting to join
 
-    ChallengeAccept - Tells the joining receiver that the host accepted challenge
-    ChallengeReject - Tells the joining receiver that the host rejected challenge
+    HostAccept - Tells the joining receiver that the host accepted challenge
+    HostReject - Tells the joining receiver that the host rejected challenge
 
             # If the current player is playing the game
             if Game.state == 'Playing':
