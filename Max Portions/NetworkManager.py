@@ -130,7 +130,7 @@ class NetworkManager:
                 # If new hosting info comes in
                 if command == 'HostingInfo':
                     # Add username to the list of rooms
-                    Global.Game.getRoomList().append(data[1])
+                    Global.Game.getRoomList().append((data[1], addr[0]))
 
             # If the current player is hosting
             elif Global.Game.getState() == 'Hosting':
@@ -145,6 +145,8 @@ class NetworkManager:
                 elif command == 'LobbyChallenge':
                     invalidInput = True
                     
+                    raise Exception()
+
                     while invalidInput:
                         response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
                         if response == 'y':

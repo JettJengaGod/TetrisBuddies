@@ -70,7 +70,7 @@ class Game:
             print("Instructions:")
             print("'h' to host a room")
             print("'v' to view available rooms")
-            print("'1', '2', '3', ... to join a room")
+            print("'0', '1', '2', ... to join a room")
             
             self.state = 'Lobby'
 
@@ -91,10 +91,10 @@ class Game:
                 print("'l' to leave as host")
 
             # Look for rooms
-            elif key == 'v':                
+            elif key == 'v':
                 print('Rooms:')
                 for roomIndex in range(len(self.roomList)):
-                    print('Room ' + str(roomIndex) + ' - ' + self.roomList[roomIndex])
+                    print('Room', str(roomIndex), '-', self.roomList[roomIndex][0], '-', self.roomList[roomIndex][1])
                 print()
 
                 # Reset room list so we remove duplicates and offline players
@@ -116,13 +116,14 @@ class Game:
                     print("Instructions:")
                     print("'h' to host a room") 
                     print("'v' to view available rooms")
+                    print("'0', '1', '2', ... to join a room number")
                     return
-                
+
                 # If it is then check if it is within range of the roomList
                 if roomIndex in range(len(self.roomList)):
                     # room[0] returns the username of the host
                     # room[1] returns the Network IP address of the room
-                    room = roomList[roomIndex]
+                    room = self.roomList[roomIndex]
                     Global.opponent.setName(room[0])
                     Global.opponent.setAddr(room[1])
 
@@ -134,6 +135,7 @@ class Game:
                     packet = pickle.dumps(response)
 
                     # Send a join request
+                    print(Global.opponent.getAddr())
                     Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
                     print('Sent packet', response)
 
@@ -166,7 +168,11 @@ class Game:
 
         # If hosting
         elif self.state == 'Hosting':
-            key = input("Enter a command: ")
+            try:
+                key = input("Enter a command: ")
+            except Exception:
+                return
+
             print()
             
             # Return to lobby and quit as host
@@ -180,7 +186,7 @@ class Game:
                 print("Instructions:")
                 print("'h' to host a room")
                 print("'v' to view available rooms")
-                print("'1', '2', '3', ... to join a room")
+                print("'1', '2', '3', ... to join a room number")
 
             # Else display instructions
             else:
