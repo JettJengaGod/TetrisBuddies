@@ -8,12 +8,24 @@ def main():
     col = 10
     row = 20
     sS = 32
+    cells =[[0 for x in range(row+2)] for x in range(col+1)] 
+    for x in range(col+1):
+        cells[x][row+1]=1
     def drawBlock(blk):
-        print(blk.array)
         for x in range(0,4):
             for y in range(0,4):
                 if blk.array[x][y]:
                     screen.blit(image,((x+blk.x)*sS,(y+blk.y)*sS))
+    def drawCells():
+        for x in range (col+1):
+            for y in range(row+1):
+                if cells[x][y]:
+                    screen.blit(image,(x*sS,y*sS))
+    def place(blk):
+        for x in range(0,4):
+            for y in range(0,4):
+                if blk.array[x][y]:
+                    cells[blk.x+x][blk.y+y]=True
     current = block(1,1)
     # initialize the pygame module
     pygame.init()
@@ -31,6 +43,7 @@ def main():
     while running:
         screen.fill((0,0,0)) #clear screen
         drawBlock(current); #draws current block
+        drawCells()
         pygame.display.flip() #updates screen
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
@@ -60,10 +73,12 @@ def main():
             current.y+=1
             keys[1]=False
         elif keys[2]:
-            current.x-=1
+            if current.x+current.left()>0:
+                current.x-=1
             keys[2]=False
         elif keys[3]:
-            current.x+=1
+            if current.x+current.right()+1<col:
+                current.x+=1
             keys[3]=False
         elif keys[4]:
             current.rotate("L")
@@ -72,7 +87,8 @@ def main():
             current = block(1,1)
             keys[5] = False
         elif keys[6]:
-            fastDrop(current)
+            place(current)
+            current = block(1,1)
             keys[6]=False
     
 # run the main function only if this module is executed as the main script

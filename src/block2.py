@@ -41,19 +41,17 @@ class block:
             self.array = self._arrangement(self._state)
     
     def left(self):
-        count = 0
-        for a in self.array:
-            if a[count] == 1:
-                return count
-            count += 1
-    
+        for a in range (0,4):
+            for b in range(0,4):
+                if self.array[a][b]:
+                    return a    
     def right(self):
-        count = 3
-        for a in self.array:
-            if a[count] == 1:
-                return count
-            count -= 1
-    
+        a = 3
+        while a>-1:
+            for b in range(0,4):
+                if self.array[a][b]:
+                    return a
+            a-=1
     def bottom(self):
         bottoms = []
         max = -1
