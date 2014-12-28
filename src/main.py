@@ -5,8 +5,8 @@ from pygame.constants import FULLSCREEN
 from block import block_square, block_line, block_lzag, block_rzag, block_rhook,\
     block_lhook, block_t
 from gravity import gravity
-screen_width = 200
-screen_height = 480
+screen_width = 320
+screen_height = 600
 screen = pygame.display.set_mode((screen_width,screen_height))
 # define a main function
 def main():
@@ -15,18 +15,14 @@ def main():
     def place(b):#function places a block onto the grid
         for x in range(0,7):
             if(x%2==0):
-                cells[int((b.xpos/20)+b.squares[x])][int((b.ypos/20)+b.squares[x+1])]=True
-    
+                cells[int((b.xpos/32)+b.squares[x])][int((b.ypos/32)+b.squares[x+1])]=True
     def checkCollision(block):
-        count = 0
-        for s in block.squares:
-            if count%2 == 0:
-                #print(int(block.xpos/20 + block.squares[s]), int(block.ypos/20 + block.squares[s+1] + 1))
-                if (cells[int((block.xpos/20) + block.squares[s])][int((block.ypos/20)+block.squares[s+1]+1)] != 0
+        for s in range(0,7):
+            if s%2 == 0:
+                #print(int(block.xpos/32 + block.squares[s]), int(block.ypos/32 + block.squares[s+1] + 1))
+                if (cells[int((block.xpos/32) + block.squares[s])][int((block.ypos/32)+block.squares[s+1]+1)] != 0
                     or block.ypos + block.height >= screen_height):
                         return True
-            count += 1
-                
     def random_block():#makes a new random block at the starting spot
         x = random.randint(0,6)
         if(x == 0):
@@ -46,23 +42,33 @@ def main():
     def drawblock(blk): #draws a block taken as a parameter
         for x in range(0,7):
             if(x%2==0):
-                screen.blit(image,(blk.xpos+blk.squares[x]*20,blk.ypos+blk.squares[x+1]*20))       
+                screen.blit(image,(blk.xpos+blk.squares[x]*32,blk.ypos+blk.squares[x+1]*32))
+    def fastDrop(block):
+        x = 0
+        for y in range(0,24):
+            for s in range(0,7):
+                if s%2 == 0:
+                    x = int((block.xpos/32) + block.squares[s])
+                    if cells[x][y]:
+                        block.ypos = y*32-block.height
+                        place(block)
+                        block = random_block()
+                        return
     # initialize the pygame module
     pygame.init()
     pygame.display.set_caption("TetrisBuddies")
-    keys = [False, False, False, False,False, False]
+    keys = [False, False, False, False,False, False,False]
     # create a surface on screen that has the size of 240 x 180
     image = pygame.image.load("block.png")
     # define the position of the block
     # how many pixels we move our block each frame
-    step_x = 20
-    step_y = 20
+    step_x = 32
+    step_y = 32
     running = True
 
     current = random_block() #creates first controlable block
     g = gravity(0.1)#initializes gravity class
     # main loop
-    
     while running:
         screen.fill((0,0,0)) #clear screen
         drawblock(current); #draws current block
@@ -70,7 +76,7 @@ def main():
         for x in range(0,10):
             for y in range(0,24):
                 if cells[x][y]==1:
-                    screen.blit(image,(20*x,20*y))
+                    screen.blit(image,(32*x,32*y))
         pygame.display.flip() #updates screen
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -86,6 +92,8 @@ def main():
                     keys[4]=True
                 elif event.key==pygame.K_t:
                     keys[5]=True
+                elif event.key==pygame.K_SPACE:
+                    keys[6]=True
             # only do something if the event is of type QUIT
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
@@ -109,11 +117,20 @@ def main():
         elif keys[5]:
             current.rotateR()
             keys[5]=False
+        elif keys[6]:
+            fastDrop(current)
+            keys[6]=False
+            
 
         if current.xpos>screen_width-current.width:
             current.xpos=screen_width-current.width
-        if current.xpos<0:
-            current.xpos=0
+        for x in range (0,7):
+            if x%2 == 0:
+                if(current.squares[x])==0:
+                    if current.xpos<0:
+                        current.xpos=0
+        if current.xpos<-32:
+            current.xpos=-32   
         if current.ypos>screen_height-current.height:
             current.ypos=screen_height-current.height
         if current.ypos<0:
