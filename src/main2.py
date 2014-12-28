@@ -6,6 +6,7 @@ from cells import cells
 # define a main function
 
 def main():
+    swapped = False
     col = 10
     row = 20
     sS = 32
@@ -58,13 +59,15 @@ def main():
     
     # define a variable to control the main loop
     running = True
-    keys = [False, False, False, False,False, False,False]
+    keys = [False, False, False, False,False, False,False,False]
     # main loop
     grav = gravity(1000,10)
+    saved = None
     while running:
         if checkCol(current)==False:
             grav.fall(current)
         else:
+            swapped = False
             place(current)
             current = block(1,1)
 
@@ -89,6 +92,8 @@ def main():
                     keys[5]=True
                 elif event.key==pygame.K_SPACE:
                     keys[6]=True
+                elif event.key==pygame.K_c:
+                    keys[7]=True
             # only do something if the event is of type QUIT
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
@@ -100,6 +105,7 @@ def main():
             if checkCol(current)==False:
                 current.y+=1
             else:
+                swapped = False
                 place(current)
                 current = block(1,1)
             keys[1]=False
@@ -121,8 +127,24 @@ def main():
             keys[5] = False
         elif keys[6]:
             hardDrop(current)
+            swapped = False
             current = block(1,1)
             keys[6]=False
+        elif keys[7]:
+            print(swapped)
+            if saved == None:
+                saved = current
+                current = block(1,1)
+                swapped = True
+            elif swapped==False:
+                print('dolan')
+                temp = current
+                current = saved
+                current.x = 1
+                current.y = 1
+                saved = temp
+                swapped = True
+            keys[7]=False
     
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)

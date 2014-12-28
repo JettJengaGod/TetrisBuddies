@@ -7,7 +7,6 @@ class block:
         randomizes which "block" as well as which rotation state it begins in'''
         self.x = x
         self.y = y
-        
         self._state = random.randint(0,3)
         r =  random.randint(0,6)
         if r == 0:
