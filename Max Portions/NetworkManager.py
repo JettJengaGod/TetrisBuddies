@@ -19,7 +19,7 @@ class NetworkManager:
         self.host = gethostbyname(gethostname())
 
         # bind() tells the socket to receive messages on port 6969
-        self.socket.bind((self.host, 6969))
+        self.socket.bind(('', 6969))
 
         # Setting some more specific socket options so that
         # we can broadcast messages to all clients in the LAN
@@ -50,19 +50,20 @@ class NetworkManager:
 
     # Receives packets(messages) and puts them into queue
     def checkForMessages(self):
-        # recvfrom() will block the application until it receives a packet
-        # The 4096 indicates that the socket will receive up to 4096 bytes
-        # data is what the socket received
-        # addr is where the information came from
-        pickledData, addr = self.socket.recvfrom(4096)
-        data = pickle.loads(pickledData)
-        print('checking')
-
-        # Remember to lock so that we don't run into conflict accessing it
-        self.messageLock.acquire()
-        # Puts the received info into the queue
-        self.messageQueue.append((data, addr))
-        self.messageLock.release()
+        while Global.Game.isRunning = True:
+            # recvfrom() will block the application until it receives a packet
+            # The 4096 indicates that the socket will receive up to 4096 bytes
+            # data is what the socket received
+            # addr is where the information came from
+            pickledData, addr = self.socket.recvfrom(4096)
+            data = pickle.loads(pickledData)
+            print('checking')
+            
+            # Remember to lock so that we don't run into conflict accessing it
+            self.messageLock.acquire()
+            # Puts the received info into the queue
+            self.messageQueue.append((data, addr))
+            self.messageLock.release()
 
     # Processes the messages
     def processMessages(self):
