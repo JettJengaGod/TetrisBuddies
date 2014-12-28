@@ -243,7 +243,6 @@ class Game:
                         packet = pickle.dumps(response)
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
-                return
 
         elif self.state == 'Playing':
             # Every loop we check and see if we are still in communication with opponent
@@ -313,4 +312,5 @@ class Game:
                     continue
 
         elif self.state == 'Result':
-            pass
+            while True:
+                pass
