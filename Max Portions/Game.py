@@ -57,8 +57,6 @@ class Game:
         if self.state == 'NameSelection':
             name = input('To get started, enter a name: ')
 
-            Global.NetworkManager.requestRooms()
-
             Global.player.setName(name)
             print('Hello ' + Global.player.getName() + '!')
             print()
@@ -88,11 +86,19 @@ class Game:
 
             # Look for rooms
             elif key == 'v':
+                # Reset the roomList so we rid ourselves of duplicates or dead connection
+                self.roomList = []
+                
+                response = ['LobbyRequest']
+                packet = pickle.dumps(response)
+                
+                Global.NetworkManager.getSocket().sendto(bytes(packet), ('<broadcast>', 6969))
+                print('Broadcasted packet', response)
+
                 print('Rooms:')
                 print(self.roomList)
                 for roomIndex in range(len(self.roomList)):
                     print('Room ' + str(roomIndex) + ' - ' + self.roomList[roomIndex])
-                Global.NetworkManager.requestRooms()
                 print()
 
             # Else display instructions

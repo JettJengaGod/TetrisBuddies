@@ -170,14 +170,3 @@ class NetworkManager:
                             print('Sent packet', response)
 
             self.messageLock.release()
- 
-    # Broadcasts a message looking for available room info
-    def requestRooms(self):
-        # Reset the roomList so we rid ourselves of duplicates or dead connection
-        Global.Game.roomList = []
-
-        response = ['LobbyRequest']
-        packet = pickle.dumps(response)
-        
-        self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
-        print('Broadcasted packet', response)
