@@ -110,11 +110,11 @@ class NetworkManager:
             pickledData, addr = self.socket.recvfrom(4096)
             data = pickle.loads(pickledData)
 
-            print('Received packet:', data)
-
             # Skip over packets if we have the same addresses
             if self.host == addr[0]:
                 continue
+
+            print('Received packet:', data)
 
             command = data[0]
 
@@ -129,10 +129,6 @@ class NetworkManager:
             if Global.Game.getState() == 'Lobby':
                 # If new hosting info comes in
                 if command == 'HostingInfo':
-                    # Make sure there are no duplicate rooms
-                    for room in Global.Game.getRoomList():
-                        if room == data[1]:
-                            return
                     # Add username to the list of rooms
                     Global.Game.getRoomList().append(data[1])
 
