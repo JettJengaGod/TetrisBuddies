@@ -10,5 +10,6 @@ class gravity:
         if pygame.time.get_ticks() - self._time > self._dropTime:
             block.y += 1
             self._time = pygame.time.get_ticks()
-            self._dropTime -= self._increment
+            if self._increment > 400:
+                self._dropTime -= self._increment
             
