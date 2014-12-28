@@ -32,6 +32,11 @@ class Game:
         pygame.init()
         self.clock = pygame.time.Clock()
 
+        # connectionTTL is a TTL timer
+        # If it passes some limit without a response from the opponent
+        # then it will kick the player out to Hosting or Lobby
+        self.connectionTTL = 0
+
     # Accessors
     def getRoomList(self): return self.roomList
     def getState(self): return self.state
@@ -158,6 +163,9 @@ class Game:
                             elif command == 'HostingAccept':
                                 print('The host accepted your challenge')
                                 print()
+
+                                self.connectionClock = pygame.time.Clock()
+                                self.connectionClock.tick()
                                 self.state = 'Playing'
                                 return
                             else:
@@ -222,7 +230,10 @@ class Game:
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
 
-                        Global.Game.setState('Playing')
+                        self.connectionClock = pygame.time.Clock()
+                        self.connectionClock.tick()
+
+                        self.state = 'Playing'
                         Global.opponent.setName(data[1])
                         Global.opponent.setAddr(addr[0])
 
@@ -235,9 +246,73 @@ class Game:
                 return
 
         elif self.state == 'Playing':
-            # If playing, continuously send information to other person
-            print('PLAYING GAME')
-            response = ['Playing', Global.player.getName()]
-            packet = pickle.dumps(response)
-            Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-            print('Sent packet', response, Global.opponent.getAddr())
+            try:
+                # Every loop we check and see if we are still in communication with opponent
+                self.connectionTTL += self.connectionClock()
+
+                # If we aren't, then change our state after 10 seconds depending if we are a host
+                if self.connectionTTL >= 10000:
+                    if self.isHost:
+                        self.state = 'Hosting'
+                        print('Lost connection with opponent')
+                        print()
+                        print('Changed state to Hosting')
+                        print("Instructions:")
+                        print("'Esc' to leave as host")
+                    else:
+                        self.state = 'Lobby'
+                        print('Lost connection with opponent')
+                        print()
+                        print('Changed state to Lobby')
+                        print("Instructions:")
+                        print("'h' to host a room")
+                        print("'v' to view available rooms")
+                        print("'0', '1', '2', ... to join a room number")
+
+                    # If playing, continuously send information to other person
+                    # TODO: Send gameboard
+                    response = ['PlayingUpdate']
+                    packet = pickle.dumps(response)
+                    Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                    print('Sent packet', response, Global.opponent.getAddr())
+
+            except KeyboardInterrupt:
+                data = None
+                addr = None
+
+                # Block until we get the right message in the queue
+                while Global.NetworkManager.getMessageQueue():
+                    Global.NetworkManager.getMessageLock().acquire()
+                    data, addr = Global.NetworkManager.getMessageQueue().popleft()
+                    Global.NetworkManager.getMessageLock().release()
+
+                    command = data[0]
+
+                    if command == 'PlayingWin':
+                        self.state = 'Result'
+                        print('You lost!')
+                        print()
+                        print('Switched state to Result')
+                        print('Instructions:')
+                        if self.isHost:
+                            print("'Enter' to play again")
+                            print("'Esc' to leave as host")
+                        else:
+                            print("'c' to challenge host")
+                            print("'l' to leave to lobby")
+                        return
+                    elif command == 'PlayingLose':
+                        self.state = 'Result'
+                        print('You won!')
+                        print()
+                        print('Switched state to Result')
+                        print('Instructions:')
+                        if self.isHost:
+                            print("'Enter' to play again")
+                            print("'Esc' to leave as host")
+                        return
+                    else:
+                        continue
+
+        elif self.state == 'Result':
+            pass
