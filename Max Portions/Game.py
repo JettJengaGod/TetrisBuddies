@@ -1,6 +1,7 @@
 import Global
 import pygame
 import pickle
+import msvcrt
 from Player import *
 from NetworkManager import NetworkManager
 
@@ -141,12 +142,11 @@ class Game:
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
                     while timer <= 10000:
                         timer += self.clock.tick()
-                        print('.')
+                        print(Global.NetworkManager.getMessageQueue())
                         while Global.NetworkManager.getMessageQueue():
-                            print('XXXXXXXXXXXXXXXXXXXXXX')
-                            Global.NetworkManager.messageLock.acquire()
+                            Global.NetworkManager.getMessageLock().acquire()
                             data, addr = Global.NetworkManager.getMessageQueue().popleft()
-                            Global.NetworkManager.messageLock.release()
+                            Global.NetworkManager.getMessageLock().release()
 
                             print('data', data)
                             command = data[0]
@@ -178,7 +178,6 @@ class Game:
             # The message thread will spit out an exception here that we
             # will then catch
             try:
-                import msvcrt
                 while True:
                     if msvcrt.kbhit():
                         ascii = ord(msvcrt.getch())
@@ -205,11 +204,13 @@ class Game:
 
                 # Block until we get the right message in the queue
                 while Global.NetworkManager.getMessageQueue():
-                    Global.NetworkManager.messageLock.acquire()
+                    Global.NetworkManager.getMessageLock().acquire()
                     data, addr = Global.NetworkManager.getMessageQueue().popleft()
-                    Global.NetworkManager.messageLock.release()
+                    Global.NetworkManager.getMessageLock().release()
 
-                    if not data[0] == 'LobbyChallenge':
+                    command = data[0]
+
+                    if not command == 'LobbyChallenge':
                         continue
                     else:
                         break

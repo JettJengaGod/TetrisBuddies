@@ -119,4 +119,6 @@ class NetworkManager:
             else:
                 self.messageQueue.append((data, addr))
 
+            print(self.messageQueue)
+
             self.messageLock.release()
