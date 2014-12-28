@@ -19,7 +19,7 @@ class NetworkManager:
         self.host = gethostbyname(gethostname())
 
         # bind() tells the socket to receive messages on port 6969
-        self.socket.bind((self.host, 6969))
+        self.socket.bind(('', 6969))
 
         # Setting some more specific socket options so that
         # we can broadcast messages to all clients in the LAN
@@ -50,18 +50,19 @@ class NetworkManager:
 
     # Receives packets(messages) and puts them into queue
     def checkForMessages(self):
-        # recvfrom() will block the application until it receives a packet
-        # The 4096 indicates that the socket will receive up to 4096 bytes
-        # data is what the socket received
-        # addr is where the information came from
-        pickledData, addr = self.socket.recvfrom(4096)
-        data = pickle.loads(pickledData)
+        while Global.Game.getIsRunning():
+            # recvfrom() will block the application until it receives a packet
+            # The 4096 indicates that the socket will receive up to 4096 bytes
+            # data is what the socket received
+            # addr is where the information came from
+            pickledData, addr = self.socket.recvfrom(4096)
+            data = pickle.loads(pickledData)
 
-        # Remember to lock so that we don't run into conflict accessing it
-        self.messageLock.acquire()
-        # Puts the received info into the queue
-        self.messageQueue.append((data, addr))
-        self.messageLock.release()
+            # Remember to lock so that we don't run into conflict accessing it
+            self.messageLock.acquire()
+            # Puts the received info into the queue
+            self.messageQueue.append((data, addr))
+            self.messageLock.release()
 
     # Processes the messages
     def processMessages(self):
@@ -72,26 +73,26 @@ class NetworkManager:
             data, addr = self.messageQueue.popleft()
             self.messageLock.release()
 
+            print()
+            print('Processed packet:')
             print(data, addr)
 
             command = data[0]
 
-            print(command)
-
             # If the current player is waiting in the Lobby
-            if Global.Game.state == 'Lobby':
+            if Global.Game.getState() == 'Lobby':
                 # If new hosting info comes in
                 if command == 'HostingInfo':
                     # TODO: Update current rommList information
                     Global.Game.getRoomList().append(data[1])
 
             # If the current player is hosting
-            elif Global.Game.state == 'Hosting':
+            elif Global.Game.getState() == 'Hosting':
                 # If he gets a request for information then send it
                 if command == 'LobbyRequest':
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
-                    socket.sendto(bytes(response, 'utf-8'), (addr, 6969))
+                    self.socket.sendto(bytes(packet), addr)
                 # If he gets a join request, then move to challenge
                 elif command == 'JoiningChallenge':
                     Global.Game.state = 'Challenge'
@@ -100,12 +101,12 @@ class NetworkManager:
     # Handles processing and sending messages
     def update(self):
         self.processMessages()
-
+ 
     # Broadcasts a message looking for available room info
     def requestRooms(self):
         response = ['LobbyRequest']
         packet = pickle.dumps(response)
-        print('sent broadcast')
+        print('Sent broadcast')
         self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
 
 '''

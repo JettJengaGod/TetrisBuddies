@@ -21,11 +21,17 @@ class Game:
     def __init__(self):
         # Start off by looking for a game
         self.state = 'NameSelection'
+
+    # initialize() is ran after the constructor because we may
+    # need access to member variables that aren't constructed yet
+    def initialize(self):
         Global.NetworkManager = NetworkManager()
         Global.player = Player()
         Global.opponent = Player()
 
-    def getRoomList(self): return roomList
+    def getRoomList(self): return self.roomList
+    def getState(self): return self.state
+    def getIsRunning(self): return self.isRunning
 
     # Lets Game handle everything here
     def run(self):
@@ -33,8 +39,10 @@ class Game:
             self.update()
 
     def update(self):
+        Global.NetworkManager.update()
+
         print()
-        print('--------------------------------------------------------')
+        print('---------------------------------------------------------------')
         print()
         if self.state == 'NameSelection':
             name = input('To get started, enter a name: ')
@@ -48,7 +56,7 @@ class Game:
             print("Instructions:")
             print("'h' to host a room")
             print("'v' to view available rooms")
-            print("'1' through '0' to join rooms 1 through 10")
+            print("'1' through '9' to join rooms 1 through 9")
             
             self.state = 'Lobby'
 
@@ -68,8 +76,8 @@ class Game:
 
             elif key == 'v':
                 Global.NetworkManager.requestRooms()
-
                 print('Rooms:')
+                print(self.roomList)
                 for roomIndex in range(len(self.roomList)):
                     print('Room ' + roomIndex + '- ' + self.roomList[roomIndex])
                 print()
@@ -78,7 +86,7 @@ class Game:
                 print("Invalid command")
                 print()
                 print("Instructions:")
-                print("'h' to host a room")
+                print("'h' to host a room") 
                 print("'v' to view available rooms")
 
         elif self.state == 'Hosting':
@@ -95,6 +103,7 @@ class Game:
                 print("Instructions:")
                 print("'h' to host a room")
                 print("'v' to view available rooms")
+                print("'1' through '9' to join rooms 1 through 9")
 
             else:
                 print("Invalid command")

@@ -1,6 +1,6 @@
-from Global import *
+import Global
 from Game import Game
 
-g = Game()
-game = g
-game.run()
+Global.Game = Game()
+Global.Game.initialize()
+Global.Game.run()
