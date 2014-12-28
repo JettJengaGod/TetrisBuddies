@@ -5,8 +5,8 @@ class block:
     def __init__(self):
         '''initializes a random block at a specific position x,y,
         randomizes which "block" as well as which rotation state it begins in'''
-        self.x = 12
-        self.y = 3
+        self.x = 11
+        self.y = 2
         self._state = random.randint(0,3)
         r =  random.randint(0,6)
         if r == 0:
@@ -26,8 +26,9 @@ class block:
         self.image = pygame.image.load("block"+str(r)+".png")
         self.array = self._arrangement(self._state)
     def moveIn(self):
-        self.x = 1
-        self.y = 1
+        r = random.randint(3,6)
+        self.x = r
+        self.y = 0
         return self
     def clone(self):
         c = block()
@@ -37,7 +38,7 @@ class block:
         c.image = self.image
         return c
     def save(self):
-        self.x = 12
+        self.x = 11
         self.y = 8
         return self
     def rotate(self,LR):

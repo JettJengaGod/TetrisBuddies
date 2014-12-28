@@ -72,7 +72,7 @@ def main():
     
     pygame.display.set_caption("TetrisBuddies")
     # create a surface on screen that has the size of 240 x 180
-    screen = pygame.display.set_mode((col*sS*2,row*sS))
+    screen = pygame.display.set_mode(((col+6)*sS,row*sS))
     
     # define a variable to control the main loop
     running = True
@@ -81,14 +81,10 @@ def main():
     grav = gravity(1000,5)
     saved = None
     while running:
-        if checkCol(current)==False:
-            grav.fall(current)
-        else:
-            swapped = False
-            place(current)
-            current = next.moveIn()
-
+        
         screen.fill((0,0,0)) #clear screen
+        bkg =pygame.image.load("MaxFaggotry.png")
+        screen.blit(bkg,(col*sS,0))
         drawBlock(current) #draws current block
         drawGhost(current)
         drawBlock(next)
@@ -168,7 +164,12 @@ def main():
                 saved = temp.save()
                 swapped = True
             keys[7]=False
-    
+        if checkCol(current)==False:
+            grav.fall(current)
+        else:
+            swapped = False
+            place(current)
+            current = next.moveIn()
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
 if __name__=="__main__":
