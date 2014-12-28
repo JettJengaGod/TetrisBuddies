@@ -21,38 +21,6 @@ data[0]: command
 
     HostAccept - Tells the joining receiver that the host accepted challenge
     HostReject - Tells the joining receiver that the host rejected challenge
-
-            # If the current player is playing the game
-            if Game.state == 'Playing':
-                # If he receives an game update
-                if command == 'PlayingUpdate':
-                    print('placeholder')
-                    # TODO: Update game board
-                elif command == 'PlayingLine':
-                    print('placeholder')
-                elif command == 'PlayingLose':
-                    Game.state = 'Results'
-                    # TODO: Confirmation
-                elif command == 'PlayingWin':
-                    Game.state = 'Results'
-                    # TODO: Confirmation
-
-            # If the current player is joining
-            elif Game.state == 'Joining':
-                #If he gets an accepted challenge request
-                if command == 'ChallengeAccept':
-                    Game.state = 'Playing'
-                    # TODO: Accept message
-                #If he gets a denied request
-                elif command == 'ChallengeDenied':
-                    Game.state = 'Lobby'
-                    # TODO: Deny message
-
-            # If the current player is waiting in results
-            elif Game.state == 'Result':
-                # If the current player is a host and 
-                if command == 'ResultRematch':
-                    print('placeholder')
 '''
 
 # Handles basically all the networking things

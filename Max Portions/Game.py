@@ -144,10 +144,8 @@ class Game:
                         timer += self.clock.tick()
                         if Global.NetworkManager.getMessageQueue():
                             Global.NetworkManager.messageLock.acquire()
-                            pickledData, addr = Global.NetworkManager.getMessageQueue().popleft()
+                            data, addr = Global.NetworkManager.getMessageQueue().popleft()
                             Global.NetworkManager.messageLock.release()
-
-                            data = pickle.loads(pickledData)
 
                             command = data[0]
 
@@ -200,16 +198,13 @@ class Game:
 
                 data = None
                 addr = None
-                pickledData = None
 
                 # Block until we get the right message in the queue
                 while Global.NetworkManager.getMessageQueue():
                     Global.NetworkManager.messageLock.acquire()
-                    pickledData, addr = Global.NetworkManager.getMessageQueue().popleft()
+                    data, addr = Global.NetworkManager.getMessageQueue().popleft()
                     Global.NetworkManager.messageLock.release()
 
-                    data = pickle.loads(pickledData)
-                    
                     if not data[0] == 'LobbyChallenge':
                         continue
                     else:
