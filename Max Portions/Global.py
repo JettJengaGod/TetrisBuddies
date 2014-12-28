@@ -2,4 +2,4 @@
 player = None
 opponent = None
 NetworkManager = None
-game = None
+Game = None

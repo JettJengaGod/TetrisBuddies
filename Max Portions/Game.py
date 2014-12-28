@@ -25,7 +25,8 @@ class Game:
         Global.player = Player()
         Global.opponent = Player()
 
-    def getRoomList(self): return roomList
+    def getRoomList(self): return self.roomList
+    def getState(self): return self.state
 
     # Lets Game handle everything here
     def run(self):
@@ -36,7 +37,7 @@ class Game:
         Global.NetworkManager.update()
 
         print()
-        print('--------------------------------------------------------')
+        print('---------------------------------------------------------------')
         print()
         if self.state == 'NameSelection':
             name = input('To get started, enter a name: ')

@@ -19,7 +19,7 @@ class NetworkManager:
         self.host = gethostbyname(gethostname())
 
         # bind() tells the socket to receive messages on port 6969
-        self.socket.bind((host, 6969))
+        self.socket.bind((self.host, 6969))
 
         # Setting some more specific socket options so that
         # we can broadcast messages to all clients in the LAN
@@ -73,6 +73,7 @@ class NetworkManager:
             data, addr = self.messageQueue.popleft()
             self.messageLock.release()
 
+            print()
             print(data, addr)
 
             command = data[0]
@@ -80,14 +81,14 @@ class NetworkManager:
             print(command)
 
             # If the current player is waiting in the Lobby
-            if Global.Game.state == 'Lobby':
+            if Global.Game.getState() == 'Lobby':
                 # If new hosting info comes in
                 if command == 'HostingInfo':
                     # TODO: Update current rommList information
                     Global.Game.getRoomList().append(data[1])
 
             # If the current player is hosting
-            elif Global.Game.state == 'Hosting':
+            elif Global.Game.getState() == 'Hosting':
                 # If he gets a request for information then send it
                 if command == 'LobbyRequest':
                     response = ['HostingInfo', Global.player.getName()]
