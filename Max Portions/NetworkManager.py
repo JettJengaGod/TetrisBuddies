@@ -110,8 +110,10 @@ class NetworkManager:
             pickledData, addr = self.socket.recvfrom(4096)
             data = pickle.loads(pickledData)
 
+            print('Received packet:', data)
+
             # Skip over packets if we have the same addresses
-            if self.host==addr[0]:
+            if self.host == addr[0]:
                 continue
 
             command = data[0]
@@ -131,8 +133,8 @@ class NetworkManager:
                     for room in Global.Game.getRoomList():
                         if room == data[1]:
                             return
-                    # Add to the list of rooms
-                    Global.Game.getRoomList().append((data, addr[0]))
+                    # Add username to the list of rooms
+                    Global.Game.getRoomList().append(data[1])
 
             # If the current player is hosting
             elif Global.Game.getState() == 'Hosting':
@@ -141,7 +143,7 @@ class NetworkManager:
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
                     self.socket.sendto(bytes(packet), addr)
-                    print('Sent:', response)
+                    print('Sent packet:', response)
 
                 # If he gets a join request, then move to challenge
                 elif command == 'LobbyChallenge':
@@ -154,6 +156,7 @@ class NetworkManager:
                             response = ['HostAccept']
                             packet = pickle.dumps(response)
                             self.socket.sendto(bytes(packet), addr)
+                            print('Sent packet', response)
 
                             Global.Game.setState('Playing')
                             Global.opponent.setName(data[1])
@@ -164,6 +167,7 @@ class NetworkManager:
                             response = ['HostReject']
                             packet = pickle.dumps(response)
                             self.socket.sendto(bytes(packet), addr)
+                            print('Sent packet', response)
 
             self.messageLock.release()
  
@@ -175,5 +179,5 @@ class NetworkManager:
         response = ['LobbyRequest']
         packet = pickle.dumps(response)
         
-        print('Sent broadcast')
         self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
+        print('Broadcasted packet', response)

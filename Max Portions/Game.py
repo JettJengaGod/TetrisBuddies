@@ -125,6 +125,7 @@ class Game:
 
                     # Send a join request
                     Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                    print('Sent packet', response)
 
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
                     while timer <= 5000:
@@ -151,7 +152,7 @@ class Game:
                     print('Challenge request timed out')
 
                 else:
-                    print("Invalid room number")
+                    print('Invalid room number')
 
         # If hosting
         elif self.state == 'Hosting':
@@ -184,3 +185,4 @@ class Game:
             response = ['Playing', Global.player.getName()]
             packet = pickle.dumps(response)
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+            print('Sent packet', response)
