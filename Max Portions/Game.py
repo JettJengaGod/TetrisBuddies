@@ -48,9 +48,6 @@ class Game:
             self.update()
         
     def update(self):
-        # Have the NetworkManager update itself
-        Global.NetworkManager.update()
-
         # Separation text
         print()
         print('---------------------------------------------------------------')
@@ -69,7 +66,7 @@ class Game:
             print("Instructions:")
             print("'h' to host a room")
             print("'v' to view available rooms")
-            print("A number, e.g. '1', to join a room")
+            print("'1', '2', '3', ... to join a room")
             
             self.state = 'Lobby'
 
@@ -172,7 +169,7 @@ class Game:
                 print("Instructions:")
                 print("'h' to host a room")
                 print("'v' to view available rooms")
-                print("'1' through '9' to join rooms 1 through 9")
+                print("'1', '2', '3', ... to join a room")
 
             # Else display instructions
             else:

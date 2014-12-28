@@ -4,6 +4,56 @@ import pickle # pickle is used to package objects to be sent through sockets
 from collections import deque
 from socket import *
 
+'''
+PACKET
+
+data[0]: command
+    PlayingUpdate - Tells the receiver the sending player's gameboard info
+    PlayingLine - Tells the receiver to add a line to gameboard
+    PlayingLose - Tells the receiver that the sender lost
+    PlayingWin - Tells the receiver that the sender won
+
+    HostingInfo - Gives the receiver the sender's username info
+
+    LobbyRequest - Tells the host receiver to give the sender info
+    LobbyChallenge - Tells the host receiver that the sender is attempting to join
+
+    HostAccept - Tells the joining receiver that the host accepted challenge
+    HostReject - Tells the joining receiver that the host rejected challenge
+
+            # If the current player is playing the game
+            if Game.state == 'Playing':
+                # If he receives an game update
+                if command == 'PlayingUpdate':
+                    print('placeholder')
+                    # TODO: Update game board
+                elif command == 'PlayingLine':
+                    print('placeholder')
+                elif command == 'PlayingLose':
+                    Game.state = 'Results'
+                    # TODO: Confirmation
+                elif command == 'PlayingWin':
+                    Game.state = 'Results'
+                    # TODO: Confirmation
+
+            # If the current player is joining
+            elif Game.state == 'Joining':
+                #If he gets an accepted challenge request
+                if command == 'ChallengeAccept':
+                    Game.state = 'Playing'
+                    # TODO: Accept message
+                #If he gets a denied request
+                elif command == 'ChallengeDenied':
+                    Game.state = 'Lobby'
+                    # TODO: Deny message
+
+            # If the current player is waiting in results
+            elif Game.state == 'Result':
+                # If the current player is a host and 
+                if command == 'ResultRematch':
+                    print('placeholder')
+'''
+
 # Handles basically all the networking things
 class NetworkManager:
 
@@ -60,29 +110,19 @@ class NetworkManager:
             pickledData, addr = self.socket.recvfrom(4096)
             data = pickle.loads(pickledData)
 
-            print('Addresses:',self.host, addr[0])
-
-            # Remember to lock so that we don't run into conflict accessing it
-            self.messageLock.acquire()
-            # Puts the received info into the queue
-            self.messageQueue.append((data, addr))
-            self.messageLock.release()
-
-    # Processes the messages
-    def processMessages(self):
-        # Empty queues are False
-        while self.messageQueue:
-            # Pop off message and respond to it
-            self.messageLock.acquire()
-            data, addr = self.messageQueue.popleft()
-            self.messageLock.release()
-
-            print()
-            print('Processed packet:')
-            print(data, addr)
+            # Skip over packets if we have the same addresses
+            if self.host==addr[0]:
+                continue
 
             command = data[0]
 
+            # Remember to lock so that we don't run into conflict accessing it
+            self.messageLock.acquire()
+
+            # These need to be check within the checkForMessages() thread because
+            # they need to be responded immediately. If we put these sections in
+            # the main thread they may get blocked when the Game() update() is waiting 
+            # for input
             # If the current player is waiting in the Lobby
             if Global.Game.getState() == 'Lobby':
                 # If new hosting info comes in
@@ -91,8 +131,7 @@ class NetworkManager:
                     for room in Global.Game.getRoomList():
                         if room == data[1]:
                             return
-
-                    # TODO: Update current rommList information
+                    # Add to the list of rooms
                     Global.Game.getRoomList().append(data, addr[0])
 
             # If the current player is hosting
@@ -126,9 +165,7 @@ class NetworkManager:
                             packet = pickle.dumps(response)
                             self.socket.sendto(bytes(packet), addr)
 
-    # Handles processing and sending messages
-    def update(self):
-        self.processMessages()
+            self.messageLock.release()
  
     # Broadcasts a message looking for available room info
     def requestRooms(self):
@@ -140,53 +177,3 @@ class NetworkManager:
         
         print('Sent broadcast')
         self.socket.sendto(bytes(packet), ('<broadcast>', 6969))
-
-'''
-PACKET
-
-data[0]: command
-    PlayingUpdate - Tells the receiver the sending player's gameboard info
-    PlayingLine - Tells the receiver to add a line to gameboard
-    PlayingLose - Tells the receiver that the sender lost
-    PlayingWin - Tells the receiver that the sender won
-
-    HostingInfo - Gives the receiver the sender's username info
-
-    LobbyRequest - Tells the host receiver to give the sender info
-    LobbyChallenge - Tells the host receiver that the sender is attempting to join
-
-    HostAccept - Tells the joining receiver that the host accepted challenge
-    HostReject - Tells the joining receiver that the host rejected challenge
-
-            # If the current player is playing the game
-            if Game.state == 'Playing':
-                # If he receives an game update
-                if command == 'PlayingUpdate':
-                    print('placeholder')
-                    # TODO: Update game board
-                elif command == 'PlayingLine':
-                    print('placeholder')
-                elif command == 'PlayingLose':
-                    Game.state = 'Results'
-                    # TODO: Confirmation
-                elif command == 'PlayingWin':
-                    Game.state = 'Results'
-                    # TODO: Confirmation
-
-            # If the current player is joining
-            elif Game.state == 'Joining':
-                #If he gets an accepted challenge request
-                if command == 'ChallengeAccept':
-                    Game.state = 'Playing'
-                    # TODO: Accept message
-                #If he gets a denied request
-                elif command == 'ChallengeDenied':
-                    Game.state = 'Lobby'
-                    # TODO: Deny message
-
-            # If the current player is waiting in results
-            elif Game.state == 'Result':
-                # If the current player is a host and 
-                if command == 'ResultRematch':
-                    print('placeholder')
-'''
