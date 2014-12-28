@@ -21,12 +21,17 @@ class Game:
     def __init__(self):
         # Start off by looking for a game
         self.state = 'NameSelection'
+
+    # initialize() is ran after the constructor because we may
+    # need access to member variables that aren't constructed yet
+    def initialize(self):
         Global.NetworkManager = NetworkManager()
         Global.player = Player()
         Global.opponent = Player()
 
     def getRoomList(self): return self.roomList
     def getState(self): return self.state
+    def getIsRunning(self): return self.isRunning
 
     # Lets Game handle everything here
     def run(self):

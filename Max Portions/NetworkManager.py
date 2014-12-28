@@ -50,15 +50,18 @@ class NetworkManager:
 
     # Receives packets(messages) and puts them into queue
     def checkForMessages(self):
-        while Global.Game.isRunning = True:
+        while Global.Game.getIsRunning():
             # recvfrom() will block the application until it receives a packet
             # The 4096 indicates that the socket will receive up to 4096 bytes
             # data is what the socket received
             # addr is where the information came from
             pickledData, addr = self.socket.recvfrom(4096)
             data = pickle.loads(pickledData)
-            print('checking')
             
+            # We ignore any packets that are sent from ourselves
+            if addr[0] == host:
+                return
+
             # Remember to lock so that we don't run into conflict accessing it
             self.messageLock.acquire()
             # Puts the received info into the queue
@@ -75,11 +78,10 @@ class NetworkManager:
             self.messageLock.release()
 
             print()
+            print('Processed packet: ')
             print(data, addr)
 
             command = data[0]
-
-            print(command)
 
             # If the current player is waiting in the Lobby
             if Global.Game.getState() == 'Lobby':
