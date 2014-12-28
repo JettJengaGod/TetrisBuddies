@@ -1,7 +1,7 @@
 # import the pygame module, so you can use it
 import pygame
-import block2
 from block2 import block
+from gravity2 import gravity
 # define a main function
 
 def main():
@@ -60,7 +60,14 @@ def main():
     running = True
     keys = [False, False, False, False,False, False,False]
     # main loop
+    grav = gravity(1000,10)
     while running:
+        if checkCol(current)==False:
+            grav.fall(current)
+        else:
+            place(current)
+            current = block(1,1)
+
         screen.fill((0,0,0)) #clear screen
         drawBlock(current); #draws current block
         drawCells()
