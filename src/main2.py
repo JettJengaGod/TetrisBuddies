@@ -8,9 +8,9 @@ def main():
     col = 10
     row = 20
     sS = 32
-    cells =[[0 for x in range(row+2)] for x in range(col+1)] 
+    cells =[[0 for x in range(row+1)] for x in range(col+1)] 
     for x in range(col+1):
-        cells[x][row+1]=1
+        cells[x][row]=1
     def drawBlock(blk):
         for x in range(0,4):
             for y in range(0,4):
@@ -26,6 +26,26 @@ def main():
             for y in range(0,4):
                 if blk.array[x][y]:
                     cells[blk.x+x][blk.y+y]=True
+    def checkCol(blk):
+        for y in range(row+1):
+            for x in range(4):
+                if blk.bottom()[x]!=-1:
+                    if cells[blk.x+x][blk.y+blk.bottom()[x]+1]:
+                        return True
+        return False        
+    def hardDrop(blk):
+        while 1:
+            if(checkCol(blk)):
+                place(blk)
+                return
+            blk.y+=1  
+    def sideCol(blk,side):
+        for a in range (4):
+            for b in range (4):
+                if blk.array[a][b]:
+                    if cells[side+blk.x+a][blk.y+b]:
+                        return True
+        return False
     current = block(1,1)
     # initialize the pygame module
     pygame.init()
@@ -70,14 +90,20 @@ def main():
             current.rotate("R")
             keys[0]=False
         elif keys[1]:
-            current.y+=1
+            if checkCol(current)==False:
+                current.y+=1
+            else:
+                place(current)
+                current = block(1,1)
             keys[1]=False
         elif keys[2]:
-            if current.x+current.left()>0:
+            if (current.x+current.left()>0
+                and sideCol(current, -1)==False):
                 current.x-=1
             keys[2]=False
         elif keys[3]:
-            if current.x+current.right()+1<col:
+            if (current.x+current.right()+1<col
+                and sideCol(current, 1)==False):
                 current.x+=1
             keys[3]=False
         elif keys[4]:
@@ -87,7 +113,7 @@ def main():
             current = block(1,1)
             keys[5] = False
         elif keys[6]:
-            place(current)
+            hardDrop(current)
             current = block(1,1)
             keys[6]=False
     
