@@ -15,10 +15,17 @@ def main():
     def place(b):#function places a block onto the grid
         for x in range(0,7):
             if(x%2==0):
-                cells[(int)(b.xpos/20+b.squares[x])][(int)(b.ypos/20+b.squares[x+1])]=True
+                cells[int((b.xpos/20)+b.squares[x])][int((b.ypos/20)+b.squares[x+1])]=True
     
     def checkCollision(block):
-        pass
+        count = 0
+        for s in block.squares:
+            if count%2 == 0:
+                #print(int(block.xpos/20 + block.squares[s]), int(block.ypos/20 + block.squares[s+1] + 1))
+                if (cells[int((block.xpos/20) + block.squares[s])][int((block.ypos/20)+block.squares[s+1]+1)] != 0
+                    or block.ypos + block.height >= screen_height):
+                        return True
+            count += 1
                 
     def random_block():#makes a new random block at the starting spot
         x = random.randint(0,6)
@@ -43,7 +50,7 @@ def main():
     # initialize the pygame module
     pygame.init()
     pygame.display.set_caption("TetrisBuddies")
-    keys = [False, False, False, False,False]
+    keys = [False, False, False, False,False, False]
     # create a surface on screen that has the size of 240 x 180
     image = pygame.image.load("block.png")
     # define the position of the block
@@ -52,13 +59,11 @@ def main():
     step_y = 20
     running = True
 
-
     current = random_block() #creates first controlable block
-    g = gravity()#initializes gravity class
+    g = gravity(0.1)#initializes gravity class
     # main loop
+    
     while running:
-        checkCollision(current)
-        g.fall(current,0.7) #current block affected by gravity
         screen.fill((0,0,0)) #clear screen
         drawblock(current); #draws current block
         #draws all placed squares on the grid
@@ -79,6 +84,8 @@ def main():
                     keys[3]=True
                 elif event.key==pygame.K_r:
                     keys[4]=True
+                elif event.key==pygame.K_t:
+                    keys[5]=True
             # only do something if the event is of type QUIT
             if event.type == pygame.QUIT:
                 # change the value to False, to exit the main loop
@@ -97,10 +104,12 @@ def main():
             current.xpos+=step_x
             keys[3]=False
         elif keys[4]:
-            pass
-            #place(current)
-            #current = random_block()
+            current.rotateL()
             keys[4]=False
+        elif keys[5]:
+            current.rotateR()
+            keys[5]=False
+
         if current.xpos>screen_width-current.width:
             current.xpos=screen_width-current.width
         if current.xpos<0:
@@ -109,6 +118,12 @@ def main():
             current.ypos=screen_height-current.height
         if current.ypos<0:
             current.ypos=0
+        
+        g.fall(current) #current block affected by gravity
+        if checkCollision(current) == True:
+            place(current)
+            current = random_block()
+            g = gravity(0.1)
                 
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
