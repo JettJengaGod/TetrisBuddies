@@ -12,14 +12,29 @@ def main():
     sS = 32
     grid = cells(col,row)
     def drawBlock(blk):
+        blk.image.set_alpha(255)
         for x in range(0,4):
             for y in range(0,4):
                 if blk.array[x][y]:
                     screen.blit(blk.image,((x+blk.x)*sS,(y+blk.y)*sS))
+    def drawGhost(blk):
+        ghostBlock = blk.clone()
+        ghostBlock.image.convert_alpha()
+        ghostBlock.image.set_alpha(120)
+        while 1:
+            if checkCol(ghostBlock):
+                break
+            else:
+                ghostBlock.y += 1
+        for x in range(0,4):
+            for y in range(0,4):
+                if ghostBlock.array[x][y]:
+                    screen.blit(ghostBlock.image,((x+ghostBlock.x)*sS,(ghostBlock.y+y)*sS))
     def drawgrid():
         for x in range (col+1):
             for y in range(row+1):
                 if grid.filled[x][y]:
+                    grid.image[x][y].set_alpha(255)
                     screen.blit(grid.image[x][y],(x*sS,y*sS))
     def place(blk):
         for x in range(0,4):
@@ -75,6 +90,7 @@ def main():
 
         screen.fill((0,0,0)) #clear screen
         drawBlock(current) #draws current block
+        drawGhost(current)
         drawBlock(next)
         if(saved!=None):
             drawBlock(saved)

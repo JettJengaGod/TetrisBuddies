@@ -29,6 +29,13 @@ class block:
         self.x = 1
         self.y = 1
         return self
+    def clone(self):
+        c = block()
+        c.array = self.array
+        c.x = self.x
+        c.y = self.y
+        c.image = self.image
+        return c
     def save(self):
         self.x = 12
         self.y = 8
@@ -263,5 +270,3 @@ def block_Sq(state):
         ,[0,0,0,0]
         ,[0,0,0,0]]
         return block_Sq
-
-
