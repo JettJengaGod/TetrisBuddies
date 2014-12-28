@@ -88,7 +88,7 @@ class Game:
                 print()
                 print("Changed state to Hosting")
                 print("Instructions:")
-                print("'l' to leave as host")
+                print("'Esc' to leave as host")
 
             # Look for rooms
             elif key == 'v':
@@ -137,15 +137,17 @@ class Game:
                     # Send a join request
                     print(Global.opponent.getAddr())
                     Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                    print('Sent packet', response)
+                    print('Sent packet', response, Global.opponent.getAddr())
 
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
-                    while timer <= 5000:
+                    while timer <= 10000:
                         timer += self.clock.tick()
                         if Global.NetworkManager.getMessageQueue():
                             Global.NetworkManager.messageLock.acquire()
-                            data, addr = Global.NetworkManager.getMessageQueue().popLeft()
+                            pickleData, addr = Global.NetworkManager.getMessageQueue().popLeft()
                             Global.NetworkManager.messageLock.release()
+
+                            data = pickle.loads(pickledData)
 
                             command = data[0]
 
@@ -168,32 +170,70 @@ class Game:
 
         # If hosting
         elif self.state == 'Hosting':
+            print("Waiting for challengers, 'Esc' to leave...")
+
+            # Block until we receive a challengeRequest
+            # The message thread will spit out an exception here that we
+            # will then catch
             try:
-                key = input("Enter a command: ")
-            except Exception:
+                import msvcrt
+                while True:
+                    if msvcrt.kbhit():
+                        ascii = ord(msvcrt.getch())
+
+                        # Escape key
+                        if ascii == 27:
+                            self.state = 'Lobby'
+                            self.isHost = False
+                                    
+                            print('You left as host')
+                            print()
+                            print("Changed state to Lobby")
+                            print("Instructions:")
+                            print("'h' to host a room")
+                            print("'v' to view available rooms")
+                            print("'0', '1', '2', ... to join a room number")
+                            return
+
+            except KeyboardInterrupt:
+                validInput = False
+
+                data = None
+                addr = None
+
+                # Block until we get the right message in the queue
+                while Global.NetworkManager.getMessageQueue():
+                    Global.NetworkManager.messageLock.acquire()
+                    pickledData, addr = Global.NetworkManager.getMessageQueue().popLeft()
+                    Global.NetworkManager.messageLock.release()
+
+                    data = pickle.loads(pickledData)
+                    
+                    if not data[0] == 'LobbyChallenge':
+                        continue
+                    else:
+                        return
+
+                while not validInput:
+                    response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
+                    if response == 'y':
+                        invalidInput = True
+                        response = ['HostAccept']
+                        packet = pickle.dumps(response)
+                        Global.socket.sendto(bytes(packet), addr)
+                        print('Sent packet', response, addr[0])
+
+                        Global.Game.setState('Playing')
+                        Global.opponent.setName(data[1])
+                        Global.opponent.setAddr(addr[0])
+
+                    elif response == 'n':
+                        invalidInput = True
+                        response = ['HostReject']
+                        packet = pickle.dumps(response)
+                        Global.socket.sendto(bytes(packet), addr)
+                        print('Sent packet', response, addr[0])
                 return
-
-            print()
-            
-            # Return to lobby and quit as host
-            if key == 'l':
-                self.state = 'Lobby'
-                self.isHost = False
-
-                print('You left as host')
-                print()
-                print("Changed state to Lobby")
-                print("Instructions:")
-                print("'h' to host a room")
-                print("'v' to view available rooms")
-                print("'1', '2', '3', ... to join a room number")
-
-            # Else display instructions
-            else:
-                print("Invalid command")
-                print()
-                print("Instructions:")
-                print("'l' to leave as host")
 
         elif self.state == 'Playing':
             # If playing, continuously send information to other person
@@ -201,4 +241,4 @@ class Game:
             response = ['Playing', Global.player.getName()]
             packet = pickle.dumps(response)
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-            print('Sent packet', response)
+            print('Sent packet', response, Global.opponent.getAddr())

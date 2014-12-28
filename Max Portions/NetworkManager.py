@@ -1,6 +1,7 @@
 import threading
 import Global
 import pickle # pickle is used to package objects to be sent through sockets
+import _thread
 from collections import deque
 from socket import *
 
@@ -139,32 +140,15 @@ class NetworkManager:
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
                     self.socket.sendto(bytes(packet), addr)
-                    print('Sent packet:', response)
+                    print('Sent packet:', response, addr)
 
                 # If he gets a join request, then move to challenge
                 elif command == 'LobbyChallenge':
-                    invalidInput = True
-                    
-                    raise Exception()
+                    self.messageQueue.append((data, addr))
+                    _thread.interrupt_main()
 
-                    while invalidInput:
-                        response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
-                        if response == 'y':
-                            invalidInput = True
-                            response = ['HostAccept']
-                            packet = pickle.dumps(response)
-                            self.socket.sendto(bytes(packet), addr)
-                            print('Sent packet', response)
-
-                            Global.Game.setState('Playing')
-                            Global.opponent.setName(data[1])
-                            Global.opponent.setAddr(addr[0])
-
-                        elif response == 'n':
-                            invalidInput = True
-                            response = ['HostReject']
-                            packet = pickle.dumps(response)
-                            self.socket.sendto(bytes(packet), addr)
-                            print('Sent packet', response)
+            # Else we put it onto the messageQueue
+            else:
+                self.messageQueue.append((data, addr))
 
             self.messageLock.release()
