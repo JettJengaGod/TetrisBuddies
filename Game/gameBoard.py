@@ -6,7 +6,7 @@ from gravity2 import gravity
 from cells import cells
 import Global
 import pickle
-import soundmanager
+from Soundmanager import *
 
 class gameBoard():
     def __init__(self):
@@ -20,8 +20,10 @@ class gameBoard():
         self.quit = False
         # initialize the pygame module
         pygame.init()
+
         # initialize soundmanager
         Global.SoundManager = soundmanager()
+
         # load and set the logo
         pygame.display.set_caption("TetrisBuddies")
         # create a surface on screen that has the size of 240 x 180

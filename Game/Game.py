@@ -257,6 +257,7 @@ class Game:
             if self.connectionTTL >= 5000:
                 self.connectionTTL = 0
                 if self.isHost:
+                    pygame.quit()
                     self.state = 'Hosting'
                     print('Lost connection with challenger')
                     print()
@@ -264,6 +265,7 @@ class Game:
                     print("Instructions:")
                     print("'Esc' to leave as host")
                 else:
+                    pygame.quit()
                     self.state = 'Lobby'
                     print('Lost connection with host')
                     print()
