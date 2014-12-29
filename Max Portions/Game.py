@@ -167,6 +167,7 @@ class Game:
                                 print()
 
                                 self.connectionClock.tick()
+                                self.connectionTTL = 0
                                 self.state = 'Playing'
                                 return
                             else:
@@ -232,6 +233,7 @@ class Game:
                         # print('Sent packet', response, addr[0])
 
                         self.connectionClock.tick()
+                        self.connectionTTL = 0
                         self.state = 'Playing'
                         Global.opponent.setName(data[1])
                         Global.opponent.setAddr(addr[0])
@@ -249,6 +251,7 @@ class Game:
 
             # If we aren't, then change our state after 10 seconds depending if we are a host
             if self.connectionTTL >= 10000:
+                self.connectionTTL = 0
                 if self.isHost:
                     self.state = 'Hosting'
                     print('Lost connection with challenger')
@@ -362,6 +365,7 @@ class Game:
                             # print('Sent packet', response, addr[0])
 
                             self.connectionClock.tick()
+                            self.connectionTTL = 0
                             self.state = 'Playing'
                             Global.opponent.setName(data[1])
                             Global.opponent.setAddr(addr[0])
@@ -386,7 +390,7 @@ class Game:
                     response = ['ResultChallenge', Global.player.getName()]
                     packet = pickle.dumps(response)
                     Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                    print('Sent packet', response, Global.opponent.getAddr())
+                    # print('Sent packet', response, Global.opponent.getAddr())
 
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
                     while timer <= 10000:
@@ -409,6 +413,7 @@ class Game:
                                 print()
 
                                 self.connectionClock.tick()
+                                self.connectionTTL = 0
                                 self.state = 'Playing'
                                 return
                             else:
