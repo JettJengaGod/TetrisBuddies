@@ -26,7 +26,7 @@ class gameBoard():
         self.grav = gravity(1000,5)
         self.saved = None
 
-    def getGrid(): return self.grid
+    def getGrid(self): return self.grid
 
     def update(self):
         self.screen.fill((55,55,55)) #clear screen
