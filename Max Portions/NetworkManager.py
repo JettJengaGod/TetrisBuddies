@@ -31,9 +31,6 @@ class NetworkManager:
 
     # Constructor
     def __init__(self):
-        # Start off by looking for a game
-        self.state = 'Lobby'
-        
         # Socket for sending and receiving data
         self.socket = socket(AF_INET, SOCK_DGRAM)
 
@@ -44,7 +41,7 @@ class NetworkManager:
         self.socket.bind(('', 6969))
 
         # Setting some more specific socket options so that
-        # we can broadcast messages to all clients in the LAN
+        # we can broadcast messages to all celients in the LAN
         self.socket.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 
         # Allows us to reuse an address, not entirely sure if needed

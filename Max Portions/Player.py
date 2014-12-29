@@ -1,5 +1,3 @@
-from Global import *
-
 class Player:
     # Constructor
     def __init__(self):
@@ -7,9 +5,8 @@ class Player:
         self.name = ''
         self.addr = ''
 
-    # Name accessor, setter
+    # Accessor, setter
     def getName(self): return self.name
     def setName(self, newName): self.name = newName
-
     def getAddr(self): return self.addr
     def setAddr(self, newAddr): self.addr = newAddr

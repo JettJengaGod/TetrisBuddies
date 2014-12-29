@@ -7,6 +7,7 @@ from NetworkManager import NetworkManager
 
 '''
 STATES
+    NameSelection - Decide a name
     Lobby - Looking for available games
     Hosting - Hosting a room that is available for play
     Playing - Playing a game
@@ -272,6 +273,7 @@ class Game:
             # If playing, continuously send information to other person
             # TODO: Send gameboard
             response = ['PlayingLose']
+            # response = ['PlayingUpdate', GAMEBOARD_INFO]
             packet = pickle.dumps(response)
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
             # print('Sent packet', response, Global.opponent.getAddr())
@@ -284,19 +286,9 @@ class Game:
 
                 command = data[0]
 
-                if command == 'PlayingWin':
-                    self.state = 'Result'
-                    print('You lost!')
-                    print()
-                    print('Switched state to Result')
-                    print('Instructions:')
-                    if self.isHost:
-                        print("'Esc' to leave as host")
-                    else:
-                        print("'c' to challenge host")
-                        print("'l' to leave to lobby")
-                    return
-                elif command == 'PlayingLose':
+                # TODO: Within the game code, set Game.state = "Result"
+
+                if command == 'PlayingLose':
                     self.state = 'Result'
                     print('You won!')
                     print()
