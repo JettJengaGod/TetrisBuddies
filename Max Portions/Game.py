@@ -406,10 +406,8 @@ class Game:
 
                             command = data[0]
 
-                            # If host rejects, then we just return to lobby activity
+                            # If host rejects
                             if command == 'ResultReject':
-                                self.state = 'Lobby'
-
                                 print('The host rejected your challenge')
                                 print()
                                 return
