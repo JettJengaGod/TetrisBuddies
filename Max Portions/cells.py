@@ -57,7 +57,10 @@ class cells:
                     self.image[blk.x+x][blk.y+y]=blk.image
         self.rowFilled()
         blk = self.next.moveIn()
+        prevBlock = blk._arrangement
         self.next = block()
+        while self.next._arrangement == prevBlock:
+            self.next = block()
         for x in range (self.col):
             if(self.filled[x][0]):
                 self.lose = True
