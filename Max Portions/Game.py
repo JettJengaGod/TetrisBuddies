@@ -4,6 +4,7 @@ import pickle
 import msvcrt
 from Player import *
 from NetworkManager import NetworkManager
+from gameBoard import *
 
 '''
 STATES
@@ -170,6 +171,7 @@ class Game:
                                 self.connectionClock.tick()
                                 self.connectionTTL = 0
                                 self.state = 'Playing'
+                                Global.GameBoard = gameBoard()
                                 return
                             else:
                                 continue
@@ -236,6 +238,7 @@ class Game:
                         self.connectionClock.tick()
                         self.connectionTTL = 0
                         self.state = 'Playing'
+                        Global.GameBoard = gameBoard()
                         Global.opponent.setName(data[1])
                         Global.opponent.setAddr(addr[0])
 
@@ -269,6 +272,8 @@ class Game:
                     print("'h' to host a room")
                     print("'v' to view available rooms")
                     print("'0', '1', '2', ... to join a room number")
+
+            Global.GameBoard.run()
 
             # If playing, continuously send information to other person
             # TODO: Send gameboard
@@ -359,6 +364,7 @@ class Game:
                             self.connectionClock.tick()
                             self.connectionTTL = 0
                             self.state = 'Playing'
+                            Global.GameBoard = gameBoard()
                             Global.opponent.setName(data[1])
                             Global.opponent.setAddr(addr[0])
 
@@ -407,6 +413,7 @@ class Game:
                                 self.connectionClock.tick()
                                 self.connectionTTL = 0
                                 self.state = 'Playing'
+                                Global.GameBoard = gameBoard()
                                 return
                             else:
                                 continue

@@ -3,3 +3,4 @@ player = None
 opponent = None
 NetworkManager = None
 Game = None
+GameBoard = None
