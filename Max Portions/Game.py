@@ -273,15 +273,15 @@ class Game:
                     print("'v' to view available rooms")
                     print("'0', '1', '2', ... to join a room number")
 
-            Global.GameBoard.run()
-
             # If playing, continuously send information to other person
             # TODO: Send gameboard
             response = ['PlayingUpdate']
-            # response = ['PlayingUpdate', GAMEBOARD_INFO]
+            # response = ['PlayingUpdate', Global.GameBoard.getGrid()]
             packet = pickle.dumps(response)
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
             # print('Sent packet', response, Global.opponent.getAddr())
+
+            Global.GameBoard.run()
 
             # If we have a PlayingWin or PlayingLose message, then we deal with it here
             while Global.NetworkManager.getMessageQueue():
