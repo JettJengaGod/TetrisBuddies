@@ -225,9 +225,9 @@ class gameBoard():
                 print("'l' to leave to lobby")
             return
 
-'''        
-g = gameBoard()
-while True:
-    g.run()
-'''
+if __name__ == '__main__':    
+    g = gameBoard()
+    while True:
+        g.run()
+
 
