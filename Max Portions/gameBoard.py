@@ -112,9 +112,13 @@ class gameBoard():
                                 blk.x-=1
                             else:
                                 blk.x+=1
+        for a in range (4):
+            for b in temp.bottom():
+                if temp.array[a][b]:
+                    if self.grid.filled[temp.x+a][temp.y + b]:
+                        blk.y -= 1
+                        break
         return None
-    
-
 
     def run(self):
         # event handling, gets all event from the eventqueue

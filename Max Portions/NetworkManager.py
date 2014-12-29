@@ -142,6 +142,7 @@ class NetworkManager:
                 if Global.Game.getState() == 'Playing':
                     # TODO: Update the gameboard
                     Global.GameBoard.getGrid().addLines(data[1])
+                    print('Received packet:', data, addr)
 
             # Else we put it onto the messageQueue            
             else:
