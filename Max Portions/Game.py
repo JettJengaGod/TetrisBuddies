@@ -391,7 +391,7 @@ class Game:
                     self.clock.tick()
                     timer = 0
 
-                    response = ['ResultChallenge']
+                    response = ['ResultChallenge', Global.player.getName()]
                     packet = pickle.dumps(response)
                     Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
                     print('Sent packet', response, Global.opponent.getAddr())
