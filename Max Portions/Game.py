@@ -302,6 +302,9 @@ class Game:
                     if self.isHost:
                         print("'Enter' to play again")
                         print("'Esc' to leave as host")
+                    else:
+                        print("'c' to challenge host")
+                        print("'l' to leave to lobby")
                     return
 
         elif self.state == 'Result':
