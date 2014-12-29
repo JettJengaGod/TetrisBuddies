@@ -13,6 +13,6 @@ class gravity:
             else:
                 block=cells.place(block)
             self._time = pygame.time.get_ticks()
-            if self._dropTime > 400:
+            if self._dropTime > 300 :
                 self._dropTime -= self._increment
         return block   
