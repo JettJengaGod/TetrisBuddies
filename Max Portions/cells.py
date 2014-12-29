@@ -9,7 +9,7 @@ class cells:
         self.lose = False
         self.next = block()
         self.swapped = False
-        image = pygame.image.load("block7.png")
+        image = ("block7.png")
         self.default = image
         self.filled = [[0 for x in range(row+1)] for x in range(col+1)]
         self.image = [[image for x in range(row +1)]for x in range(col+1)]
