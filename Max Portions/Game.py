@@ -307,7 +307,7 @@ class Game:
                     return
 
         elif self.state == 'Result':
-            if isHost:
+            if self.isHost:
                 print("Play again? 'Enter' to play, 'Esc' to leave")
 
                 # Block until we receive a challengeRequest
@@ -318,34 +318,34 @@ class Game:
                         if msvcrt.kbhit():
                             ascii = ord(msvcrt.getch())
 
-                        # Escape key
-                        if ascii == 27:
-                            response = ['ResultLeave']
-                            packet = pickle.dumps(response)
-                            Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
-                            print('Sent packet', response, addr[0])
-
-                            self.state = 'Lobby'
-                            self.isHost = False
+                            # Escape key
+                            if ascii == 27:
+                                response = ['ResultLeave']
+                                packet = pickle.dumps(response)
+                                Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
+                                print('Sent packet', response, addr[0])
+                                
+                                self.state = 'Lobby'
+                                self.isHost = False
                                     
-                            print('You left as host')
-                            print()
-                            print("Changed state to Lobby")
-                            print("Instructions:")
-                            print("'h' to host a room")
-                            print("'v' to view available rooms")
-                            print("'0', '1', '2', ... to join a room number")
+                                print('You left as host')
+                                print()
+                                print("Changed state to Lobby")
+                                print("Instructions:")
+                                print("'h' to host a room")
+                                print("'v' to view available rooms")
+                                print("'0', '1', '2', ... to join a room number")
 
-                            return
+                                return
 
-                        elif ascii == 13:
-                            # Tells the challenger that you are restarting the game
-                            response = ['ResultReplay']
-                            packet = pickle.dumps(response)
-                            Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                            print('Sent packet', response, Global.opponent.getAddr())
+                            elif ascii == 13:
+                                # Tells the challenger that you are restarting the game
+                                response = ['ResultReplay']
+                                packet = pickle.dumps(response)
+                                Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                                print('Sent packet', response, Global.opponent.getAddr())
 
-                            self.state = 'Playing'
+                                self.state = 'Playing'
 
                 except KeyboardInterrupt:
                     validInput = False
