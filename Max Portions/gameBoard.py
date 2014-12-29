@@ -25,6 +25,9 @@ class gameBoard():
         # main loop
         self.grav = gravity(1000,5)
         self.saved = None
+
+    def getGrid(): return self.grid
+
     def update(self):
         self.screen.fill((55,55,55)) #clear screen
         bkg =pygame.image.load("MaxFaggotry.png")
@@ -109,84 +112,90 @@ class gameBoard():
                                 blk.x-=1
                             else:
                                 blk.x+=1
+        for a in range (4):
+            for b in temp.bottom():
+                if temp.array[a][b]:
+                    if self.grid.filled[temp.x+a][temp.y + b]:
+                        blk.y -= 1
+                        break
         return None
-    
-
 
     def run(self):
-        while self.running:
-            # event handling, gets all event from the eventqueue
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key==pygame.K_w or event.key==pygame.K_UP:
-                        self.keys[0]=True
-                    elif event.key==pygame.K_s or event.key==pygame.K_DOWN:
-                        self.keys[1]=True
-                    elif event.key==pygame.K_a or event.key==pygame.K_LEFT:
-                        self.keys[2]=True
-                    elif event.key==pygame.K_d or event.key==pygame.K_RIGHT:
-                        self.keys[3]=True
-                    elif event.key==pygame.K_t:
-                        self.keys[4]=True
-                    elif event.key==pygame.K_r:
-                        self.keys[5]=True
-                    elif event.key==pygame.K_SPACE:
-                        self.keys[6]=True
-                    elif event.key==pygame.K_c:
-                        self.keys[7]=True
-                # only do something if the event is of type QUIT
-                if event.type == pygame.QUIT:
-                    # change the value to False, to exit the main loop
-                    running = False
-            if self.keys[0]:
-                self.flipNudge(self.current,"R")
-                self.current.rotate('R')
-                self.keys[0]=False
-            elif self.keys[1]:
-                if self.grid.checkCol(self.current)==False:
-                    self.current.y+=1
-                else:
-                    self.grid.swapped = False
-                    self.current = self.grid.place(self.current)
-                self.keys[1]=False
-            elif self.keys[2]:
-                if (self.current.x+self.current.left()>0
-                    and self.sideCol(self.current, -1)==False):
-                    self.current.x-=1
-                self.keys[2]=False
-            elif self.keys[3]:
-                if (self.current.x+self.current.right()+1<self.col
-                    and self.sideCol(self.current, 1)==False):
-                    self.current.x+=1
-                self.keys[3]=False
-            elif self.keys[4]:
-                self.flipNudge(self.current,"L")
-                self.current.rotate('L')
-                self.keys[4]=False
-            elif self.keys[5]:
+        # event handling, gets all event from the eventqueue
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key==pygame.K_w or event.key==pygame.K_UP:
+                    self.keys[0]=True
+                elif event.key==pygame.K_s or event.key==pygame.K_DOWN:
+                    self.keys[1]=True
+                elif event.key==pygame.K_a or event.key==pygame.K_LEFT:
+                    self.keys[2]=True
+                elif event.key==pygame.K_d or event.key==pygame.K_RIGHT:
+                    self.keys[3]=True
+                elif event.key==pygame.K_t:
+                    self.keys[4]=True
+                elif event.key==pygame.K_r:
+                    self.keys[5]=True
+                elif event.key==pygame.K_SPACE:
+                    self.keys[6]=True
+                elif event.key==pygame.K_c:
+                    self.keys[7]=True
+            # only do something if the event is of type QUIT
+            elif event.type == pygame.QUIT:
+                # change the value to False, to exit the main loop
+                running = False
+
+        if self.keys[0]:
+            self.flipNudge(self.current,"R")
+            self.current.rotate('R')
+            self.keys[0]=False
+        elif self.keys[1]:
+            if self.grid.checkCol(self.current)==False:
+                self.current.y+=1
+            else:
+                self.grid.swapped = False
+                self.current = self.grid.place(self.current)
+            self.keys[1]=False
+        elif self.keys[2]:
+            if (self.current.x+self.current.left()>0
+                and self.sideCol(self.current, -1)==False):
+                self.current.x-=1
+            self.keys[2]=False
+        elif self.keys[3]:
+            if (self.current.x+self.current.right()+1<self.col
+                and self.sideCol(self.current, 1)==False):
+                self.current.x+=1
+            self.keys[3]=False
+        elif self.keys[4]:
+            self.flipNudge(self.current,"L")
+            self.current.rotate('L')
+            self.keys[4]=False
+        elif self.keys[5]:
+            self.current = self.grid.next.moveIn()
+            self.grid.next = block()
+            self.grid.addLines(1)
+            self.keys[5] = False
+        elif self.keys[6]:
+            self.current = self.hardDrop(self.current)
+            self.grid.swapped = False
+            self.keys[6]=False
+        elif self.keys[7]:
+            if self.saved == None:
+                self.saved = self.current.save()
                 self.current = self.grid.next.moveIn()
                 self.grid.next = block()
-                self.grid.addLines(1)
-                self.keys[5] = False
-            elif self.keys[6]:
-                self.current = self.hardDrop(self.current)
-                self.grid.swapped = False
-                self.keys[6]=False
-            elif self.keys[7]:
-                if self.saved == None:
-                    self.saved = self.current.save()
-                    self.current = self.grid.next.moveIn()
-                    self.grid.next = block()
-                    self.grid.swapped = True
-                elif self.grid.swapped==False:
-                    temp = self.current
-                    self.current = saved.moveIn()
-                    self.current.x = 1
-                    self.current.y = 1
-                    saved = temp.save()
-                    self.grid.swapped = True
-                self.keys[7]=False
-            self.current = self.grav.fall(self.current,self.grid)
-            self.update()
+                self.grid.swapped = True
+            elif self.grid.swapped==False:
+                temp = self.current
+                self.current = self.saved.moveIn()
+                self.current.x = 1
+                self.current.y = 1
+                self.saved = temp.save()
+                self.grid.swapped = True
+            self.keys[7]=False
+        self.current = self.grav.fall(self.current,self.grid)
+        self.update()
+'''
 g = gameBoard()
 g.run()
+'''

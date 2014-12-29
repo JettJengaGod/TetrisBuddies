@@ -2,6 +2,7 @@ import pygame
 import random
 from block2 import block
 import Global
+import pickle
 
 class cells:
     def __init__(self,col,row):
@@ -33,6 +34,7 @@ class cells:
             response = ['PlayingLine', lines_cleared - 1]
             packet = pickle.dumps(response)
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+            print('Send packet', response)
 
     def addLines(self,n):
         for a in range(n):
