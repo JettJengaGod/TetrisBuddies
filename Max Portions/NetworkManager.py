@@ -135,6 +135,7 @@ class NetworkManager:
                     # Reset the connectionTTL
                     Global.Game.connectionTTL = 0
                     # TODO: Update the gameboard info
+                    Global.GameBoard.setOpponentGrid(data[1])
 
             # If the player gets sent a line
             elif command == 'PlayingLine':
