@@ -143,7 +143,7 @@ class Game:
 
                     # Send a join request
                     Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                    print('Sent packet', response, Global.opponent.getAddr())
+                    # print('Sent packet', response, Global.opponent.getAddr())
 
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
                     while timer <= 10000:
@@ -228,7 +228,7 @@ class Game:
                         response = ['HostingAccept']
                         packet = pickle.dumps(response)
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
-                        print('Sent packet', response, addr[0])
+                        # print('Sent packet', response, addr[0])
 
                         self.connectionClock.tick()
                         self.state = 'Playing'
@@ -240,7 +240,7 @@ class Game:
                         response = ['HostingReject']
                         packet = pickle.dumps(response)
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
-                        print('Sent packet', response, addr[0])
+                        # print('Sent packet', response, addr[0])
 
         elif self.state == 'Playing':
             # Every loop we check and see if we are still in communication with opponent
@@ -270,7 +270,7 @@ class Game:
             response = ['PlayingLose']
             packet = pickle.dumps(response)
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-            print('Sent packet', response, Global.opponent.getAddr())
+            # print('Sent packet', response, Global.opponent.getAddr())
 
             # If we have a PlayingWin or PlayingLose message, then we deal with it here
             while Global.NetworkManager.getMessageQueue():
@@ -339,7 +339,7 @@ class Game:
                                 response = ['ResultReplay']
                                 packet = pickle.dumps(response)
                                 Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                                print('Sent packet', response, Global.opponent.getAddr())
+                                # print('Sent packet', response, Global.opponent.getAddr())
 
                                 self.connectionClock.tick()
                                 self.state = 'Playing'
@@ -370,7 +370,7 @@ class Game:
                             response = ['ResultAccept']
                             packet = pickle.dumps(response)
                             Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
-                            print('Sent packet', response, addr[0])
+                            # print('Sent packet', response, addr[0])
 
                             self.connectionClock.tick()
                             self.state = 'Playing'
@@ -382,7 +382,7 @@ class Game:
                             response = ['ResultReject']
                             packet = pickle.dumps(response)
                             Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
-                            print('Sent packet', response, addr[0])
+                            # print('Sent packet', response, addr[0])
 
             else:
                 key = input("Enter a command: ")

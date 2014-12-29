@@ -116,7 +116,7 @@ class NetworkManager:
                     response = ['HostingInfo', Global.player.getName()]
                     packet = pickle.dumps(response)
                     self.socket.sendto(bytes(packet), addr)
-                    print('Sent packet:', response, addr)
+                    # print('Sent packet:', response, addr)
 
             # If he gets a join request, then move to challenge
             elif command == 'LobbyChallenge':
