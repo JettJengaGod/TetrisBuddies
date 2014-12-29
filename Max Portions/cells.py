@@ -2,6 +2,7 @@ import pygame
 import random
 from block2 import block
 import Global
+import pickle
 
 class cells:
     def __init__(self,col,row):
