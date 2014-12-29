@@ -5,6 +5,7 @@ from block2 import block
 from gravity2 import gravity
 from cells import cells
 import Global
+import pickle
 
 class gameBoard():
     def __init__(self):
