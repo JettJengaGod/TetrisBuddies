@@ -250,7 +250,7 @@ class Game:
             self.connectionTTL += self.connectionClock.tick()
 
             # If we aren't, then change our state after 10 seconds depending if we are a host
-            if self.connectionTTL >= 10000:
+            if self.connectionTTL >= 5000:
                 self.connectionTTL = 0
                 if self.isHost:
                     self.state = 'Hosting'
@@ -393,7 +393,7 @@ class Game:
                     # print('Sent packet', response, Global.opponent.getAddr())
 
                     # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
-                    while timer <= 10000:
+                    while timer <= 5000:
                         timer += self.clock.tick()
                         while Global.NetworkManager.getMessageQueue():
                             Global.NetworkManager.getMessageLock().acquire()
