@@ -8,11 +8,10 @@ from socket import *
 '''
 PACKET
 
-data[0]: command
+data[0] = command
     PlayingUpdate - Tells the receiver the sending player's gameboard info
     PlayingLine - Tells the receiver to add a line to gameboard
     PlayingLose - Tells the receiver that the sender lost
-    PlayingWin - Tells the receiver that the sender won
 
     HostingInfo - Gives the receiver the sender's username info
 
@@ -88,7 +87,11 @@ class NetworkManager:
             if self.host == addr[0]:
                 continue
 
-            print('Received packet:', data, addr)
+            # Enable this line for debugging info on received packets
+            # Be careful though, as because this is ran on a different 
+            # thread, information could be printed out of nowhere and mess
+            # up your current console input/display
+            # print('Received packet:', data, addr)
 
             command = data[0]
 
