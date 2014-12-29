@@ -77,7 +77,6 @@ class cells:
         self.rowFilled()
         blk = self.next.moveIn()
         self.nextBlocks(blk)
-        print(self.next, self.next0, self.next1)
         for x in range (self.col):
             if(self.filled[x][0]):
                 self.lose = True
