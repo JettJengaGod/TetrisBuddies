@@ -4,6 +4,8 @@ import block2
 from block2 import block
 from gravity2 import gravity
 from cells import cells
+import Global
+import pickle
 
 class gameBoard():
     def __init__(self):
@@ -203,8 +205,29 @@ class gameBoard():
             self.keys[7]=False
         self.current = self.grav.fall(self.current,self.grid)
         self.update()
-        
+
+        if self.grid.lose:
+            self.quit = True
+            pygame.quit()
+            Global.Game.setState('Result')
+            response = ['PlayingLose']
+            packet = pickle.dumps(response)
+            Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+            
+            print('You lost!')
+            print()
+            print('Switched state to Result')
+            print('Instructions:')
+            if Global.Game.getIsHost():
+                print("'Esc' to leave as host")
+            else:
+                print("'c' to challenge host")
+                print("'l' to leave to lobby")
+            return
+
+'''        
 g = gameBoard()
 while True:
     g.run()
+'''
 
