@@ -114,13 +114,13 @@ def main():
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key==pygame.K_w:
+                if event.key==pygame.K_w or event.key==pygame.K_UP:
                     keys[0]=True
-                elif event.key==pygame.K_s:
+                elif event.key==pygame.K_s or event.key==pygame.K_DOWN:
                     keys[1]=True
-                elif event.key==pygame.K_a:
+                elif event.key==pygame.K_a or event.key==pygame.K_LEFT:
                     keys[2]=True
-                elif event.key==pygame.K_d:
+                elif event.key==pygame.K_d or event.key==pygame.K_RIGHT:
                     keys[3]=True
                 elif event.key==pygame.K_t:
                     keys[4]=True
@@ -140,7 +140,7 @@ def main():
             keys[0]=False
         elif keys[1]:
             if grid.checkCol(current)==False:
-                current.y+=2
+                current.y+=1
             else:
                 grid.swapped = False
                 current = grid.place(current)
