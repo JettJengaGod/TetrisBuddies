@@ -1,6 +1,8 @@
 import pygame
 import random
 from block2 import block
+import Global
+
 class cells:
     def __init__(self,col,row):
         self.score = 0
@@ -26,6 +28,12 @@ class cells:
                     self.score+=1337
                     self.clear(y)
                     lines_cleared+=1
+
+        if lines_cleared >= 2:
+            response = ['PlayingLine', lines_cleared - 1]
+            packet = pickle.dumps(response)
+            Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+
     def addLines(self,n):
         for a in range(n):
             r = random.randint(0,self.col-1)
