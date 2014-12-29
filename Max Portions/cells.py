@@ -24,7 +24,6 @@ class cells:
                 if x == self.col-1 and clear:
                     self.score+=1337
                     self.clear(y)
-                    print(self.score)
     def addLines(self,n):
         for a in range(n):
             r = random.randint(0,self.col-1)
@@ -50,7 +49,6 @@ class cells:
         for x in range (self.col):
             if(self.filled[x][0]):
                 self.lose = True
-        print(self.lose)
         return blk
     def checkCol(self,blk):
         for y in range(self.row+1):
