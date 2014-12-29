@@ -31,6 +31,7 @@ class Game:
         Global.opponent = Player()
         pygame.init()
         self.clock = pygame.time.Clock()
+        self.connectionClock = pygame.time.Clock()
 
         # connectionTTL is a TTL timer
         # If it passes some limit without a response from the opponent
@@ -164,7 +165,6 @@ class Game:
                                 print('The host accepted your challenge')
                                 print()
 
-                                self.connectionClock = pygame.time.Clock()
                                 self.connectionClock.tick()
                                 self.state = 'Playing'
                                 return
@@ -230,9 +230,7 @@ class Game:
                         Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                         print('Sent packet', response, addr[0])
 
-                        self.connectionClock = pygame.time.Clock()
                         self.connectionClock.tick()
-
                         self.state = 'Playing'
                         Global.opponent.setName(data[1])
                         Global.opponent.setAddr(addr[0])
@@ -320,11 +318,6 @@ class Game:
 
                             # Escape key
                             if ascii == 27:
-                                response = ['ResultLeave']
-                                packet = pickle.dumps(response)
-                                Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                                print('Sent packet', response, Global.opponent.getAddr())
-                                
                                 self.state = 'Lobby'
                                 self.isHost = False
                                     
@@ -345,6 +338,7 @@ class Game:
                                 Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
                                 print('Sent packet', response, Global.opponent.getAddr())
 
+                                self.connectionClock.tick()
                                 self.state = 'Playing'
 
                 except KeyboardInterrupt:
@@ -361,20 +355,10 @@ class Game:
 
                         command = data[0]
 
-                        if command == 'ResultLeave':
-                            self.state = 'Hosting'
-
-                            print('Lost connection, challenger left')
-                            print()
-                            print('Changed state to Lobby')
-                            print("Instructions:")
-                            print("'h' to host a room")
-                            print("'v' to view available rooms")
-                            print("'0', '1', '2', ... to join a room number")
-
-                            return
-                        elif not command == 'ResultChallenge':
+                        if not command == 'ResultChallenge':
                             continue
+                        else:
+                            break
 
                     while not validInput:
                         response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
@@ -385,9 +369,7 @@ class Game:
                             Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
                             print('Sent packet', response, addr[0])
 
-                            self.connectionClock = pygame.time.Clock()
                             self.connectionClock.tick()
-
                             self.state = 'Playing'
                             Global.opponent.setName(data[1])
                             Global.opponent.setAddr(addr[0])
@@ -436,7 +418,6 @@ class Game:
                                 print('The host accepted your challenge')
                                 print()
 
-                                self.connectionClock = pygame.time.Clock()
                                 self.connectionClock.tick()
                                 self.state = 'Playing'
                                 return
@@ -447,10 +428,6 @@ class Game:
                
                 elif key == 'l':
                     self.state = 'Lobby'
-                    response = ['ResultLeave']
-                    packet = pickle.dumps(response)
-                    Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                    print('Sent packet', response, Global.opponent.getAddr())
                     
                     print('You left the room')
                     print()
@@ -466,24 +443,3 @@ class Game:
                     print("Instructions:")
                     print("'c' to challenge host")
                     print("'l' to leave to lobby")
-                
-                # Block until we get the right message in the queue
-                while Global.NetworkManager.getMessageQueue():
-                    Global.NetworkManager.getMessageLock().acquire()
-                    data, addr = Global.NetworkManager.getMessageQueue().popleft()
-                    Global.NetworkManager.getMessageLock().release()
-
-                    command = data[0]
-
-                    if command == 'ResultLeave':
-                        self.state = 'Lobby'
-
-                        print('Lost connection, host left')
-                        print()
-                        print('Changed state to Lobby')
-                        print("Instructions:")
-                        print("'h' to host a room")
-                        print("'v' to view available rooms")
-                        print("'0', '1', '2', ... to join a room number")
-
-                        return
