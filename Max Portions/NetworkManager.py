@@ -141,7 +141,7 @@ class NetworkManager:
                 # If the current player is playing
                 if Global.Game.getState() == 'Playing':
                     # TODO: Update the gameboard
-                    pass
+                    Global.GameBoard.getGrid().addLines(data[1])
 
             # Else we put it onto the messageQueue            
             else:
