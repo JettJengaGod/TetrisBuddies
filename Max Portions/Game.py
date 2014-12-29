@@ -111,7 +111,7 @@ class Game:
                 response = ['LobbyRequest']
                 packet = pickle.dumps(response)
                 Global.NetworkManager.getSocket().sendto(bytes(packet), ('<broadcast>', 6969))
-                print('Broadcasted packet', response)
+                # print('Broadcasted packet', response)
 
             # Else display instructions
             else:
@@ -181,7 +181,7 @@ class Game:
         elif self.state == 'Hosting':
             print("Waiting for challenger... 'Esc' to leave")
 
-            # Block until we receive a challengeRequest
+            # Block until we retetceive a challengeRequest
             # The message thread will spit out an exception here that we
             # will then catch
             try:
