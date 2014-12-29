@@ -1,4 +1,0 @@
-TetrisBuddies
-=============
-
-Buddies Playing Tetris
