@@ -13,6 +13,7 @@ class gameBoard():
         self.row = 20
         self.sS = 32
         self.grid = cells(self.col,self.row)
+        self.opponentGrid = cells(self.col,self.row)
         self.current = self.grid.next.moveIn()
         self.grid.nextBlocks(self.current)
         self.quit = False
@@ -31,6 +32,8 @@ class gameBoard():
 
     def getGrid(self): return self.grid
 
+    def setOpponentGrid(self, newGrid): self.opponentGrid = newGrid
+
     def update(self):
         self.screen.fill((55,55,55)) #clear screen
         bkg =pygame.image.load("MaxFaggotry.png")
@@ -42,7 +45,8 @@ class gameBoard():
         self.drawBlock(self.grid.next1)
         if(self.saved!=None):
             self.drawBlock(self.saved)
-        self.drawgrid(self.grid)
+        self.drawgrid(self.grid, 0)
+        self.drawgrid(self.opponentGrid, 1)
         pygame.display.flip() #updates self.screen
     def drawBlock(self,blk):
         image = pygame.image.load(blk.image)
@@ -65,13 +69,16 @@ class gameBoard():
             for y in range(0,4):
                 if ghostBlock.array[x][y]:
                     self.screen.blit(image,((x+ghostBlock.x)*self.sS,(ghostBlock.y+y)*self.sS))
-    def drawgrid(self,grid):
+    def drawgrid(self,grid,isOpponent):
         for x in range (self.col):
             for y in range(self.row+1):
                 if grid.filled[x][y]:
                     image = pygame.image.load(grid.image[x][y])
                     image.set_alpha(255)
-                    self.screen.blit((image),(x*self.sS,y*self.sS))
+                    if isOpponent:
+                        self.screen.blit((image),((x+self.col+6)*self.sS,y*self.sS))
+                    else:
+                        self.screen.blit((image),(x*self.sS,y*self.sS))
     def hardDrop(self,blk):
         while 1:
             if(self.grid.checkCol(blk)):

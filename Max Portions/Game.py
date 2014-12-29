@@ -275,8 +275,7 @@ class Game:
 
             # If playing, continuously send information to other person
             # TODO: Send gameboard
-            response = ['PlayingUpdate']
-            # response = ['PlayingUpdate', Global.GameBoard.getGrid()]
+            response = ['PlayingUpdate', Global.GameBoard.getGrid()]
             packet = pickle.dumps(response)
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
             # print('Sent packet', response, Global.opponent.getAddr())
