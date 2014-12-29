@@ -7,7 +7,7 @@ class block:
         randomizes which "block" as well as which rotation state it begins in'''
         self.x = 11
         self.y = 2
-        self._state = random.randint(0,3)
+        self.state = random.randint(0,3)
         r =  random.randint(0,6)
         if r == 0:
             self._arrangement = block_T
@@ -24,7 +24,7 @@ class block:
         if r == 6:
             self._arrangement = block_Sq
         self.image = pygame.image.load("block"+str(r)+".png")
-        self.array = self._arrangement(self._state)
+        self.array = self._arrangement(self.state)
     def moveIn(self):
         r = random.randint(3,6)
         self.x = r
@@ -32,10 +32,12 @@ class block:
         return self
     def clone(self):
         c = block()
-        c.array = self.array
+        c.array = self._arrangement(self.state)
         c.x = self.x
         c.y = self.y
         c.image = self.image
+        c.state = self.state
+        c._arrangement = self._arrangement
         return c
     def save(self):
         self.x = 11
@@ -43,19 +45,19 @@ class block:
         return self
     def rotate(self,LR):
         if LR == 'L':
-            if self._state > 0:
-                self._state -= 1
+            if self.state > 0:
+                self.state -= 1
                 
             else:
-                self._state = 3
-            self.array = self._arrangement(self._state)
+                self.state = 3
+            self.array = self._arrangement(self.state)
         if LR == 'R':
-            if self._state < 3:
-                self._state += 1
+            if self.state < 3:
+                self.state += 1
                 
             else:
-                self._state = 0
-            self.array = self._arrangement(self._state)
+                self.state = 0
+            self.array = self._arrangement(self.state)
     
     def left(self):
         for a in range (0,4):
@@ -264,10 +266,9 @@ def block_S(state):
         return block_S3
 
 def block_Sq(state):
-    if state in range(4):
-        block_Sq = [
-         [1,1,0,0]
-        ,[1,1,0,0]
-        ,[0,0,0,0]
-        ,[0,0,0,0]]
-        return block_Sq
+    block_Sq = [
+     [1,1,0,0]
+    ,[1,1,0,0]
+    ,[0,0,0,0]
+    ,[0,0,0,0]]
+    return block_Sq

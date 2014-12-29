@@ -1,5 +1,6 @@
 # import the pygame module, so you can use it
 import pygame
+import block2
 from block2 import block
 from gravity2 import gravity
 from cells import cells
@@ -31,7 +32,7 @@ def main():
                 if ghostBlock.array[x][y]:
                     screen.blit(ghostBlock.image,((x+ghostBlock.x)*sS,(ghostBlock.y+y)*sS))
     def drawgrid():
-        for x in range (col+1):
+        for x in range (col):
             for y in range(row+1):
                 if grid.filled[x][y]:
                     grid.image[x][y].set_alpha(255)
@@ -49,6 +50,40 @@ def main():
                     if grid.filled[side+blk.x+a][blk.y+b]:
                         return True
         return False
+    def flipNudge(blk, LR):
+        if(blk._arrangement == block2.block_Sq):
+            return
+        temp = blk.clone()
+        temp.rotate(LR)
+        while temp.x < 0:
+            temp.x+=1
+            blk.x+=1
+        while (temp.right() == 3 and temp.x >6):
+            blk.x -= 1
+            temp.x -= 1
+        for x in range(4):
+            if temp.array[x]:
+                if temp.x + x>col:
+                    blk.x -= 1
+                    temp.x -= 1
+                    if temp.x +x> col:
+                        blk.x
+                        temp.x -= 1
+                    if temp._arrangement == block2.block_S:
+                        temp.x -= 1
+        if sideCol(temp,-1) == True and sideCol(temp,1) == True:
+            return 'GG'
+        if sideCol(temp,0) == True:
+            for x in range(4):
+                for y in range(4):
+                    if temp.array[x][y]:
+                        if grid.filled[temp.x+x][temp.y+y]:
+                            if x>1:
+                                blk.x-=1
+                            else:
+                                blk.x+=1
+        return None
+    
     current = grid.next.moveIn()
     grid.next = block()
     # initialize the pygame module
@@ -66,8 +101,7 @@ def main():
     grav = gravity(1000,5)
     saved = None
     while running:
-        print(current.y)
-        screen.fill((0,0,0)) #clear screen
+        screen.fill((55,55,55)) #clear screen
         bkg =pygame.image.load("MaxFaggotry.png")
         screen.blit(bkg,(col*sS,0))
         drawBlock(current) #draws current block
@@ -101,11 +135,12 @@ def main():
                 # change the value to False, to exit the main loop
                 running = False
         if keys[0]:
-            current.rotate("R")
+            flipNudge(current,"R")
+            current.rotate('R')
             keys[0]=False
         elif keys[1]:
             if grid.checkCol(current)==False:
-                current.y+=1
+                current.y+=2
             else:
                 grid.swapped = False
                 current = grid.place(current)
@@ -121,7 +156,8 @@ def main():
                 current.x+=1
             keys[3]=False
         elif keys[4]:
-            current.rotate("L")
+            flipNudge(current,"L")
+            current.rotate('L')
             keys[4]=False
         elif keys[5]:
             current = grid.next.moveIn()

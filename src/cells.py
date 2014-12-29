@@ -1,19 +1,16 @@
 import pygame
-import random
 from block2 import block
 class cells:
     def __init__(self,col,row):
-        self.score = 0
         self.col = col
         self.row = row
-        self.lose = False
         self.next = block()
         self.swapped = False
         image = pygame.image.load("block1.png")
         self.default = image
         self.filled = [[0 for x in range(row+1)] for x in range(col+1)]
         self.image = [[image for x in range(row +1)]for x in range(col+1)]
-        for x in range(col):
+        for x in range(col+1):
             self.filled[x][row]=1
     def rowFilled(self):
         for y in range (self.row):
@@ -22,21 +19,7 @@ class cells:
                 if self.filled[x][y]!=1:
                     clear = False
                 if x == self.col-1 and clear:
-                    self.score+=1337
                     self.clear(y)
-                    print(self.score)
-    def addLines(self,n):
-        for a in range(n):
-            r = random.randint(0,self.col-1)
-            for b in range (self.row):
-                for x in range(self.col):
-                    self.filled[x][b]=self.filled[x][b+1]
-                    self.image[x][b]=self.image[x][b+1]
-                    if b == self.row-1:
-                        self.image[x][b]=self.default
-                    if b == self.row-1 and x == r:
-                        self.filled[x][b] = 0
-                        
     def place(self,blk):
         self.swapped = False
         for x in range(0,4):
@@ -47,10 +30,6 @@ class cells:
         self.rowFilled()
         blk = self.next.moveIn()
         self.next = block()
-        for x in range (self.col):
-            if(self.filled[x][0]):
-                self.lose = True
-        print(self.lose)
         return blk
     def checkCol(self,blk):
         for y in range(self.row+1):
