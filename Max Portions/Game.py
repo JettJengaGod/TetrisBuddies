@@ -294,6 +294,7 @@ class Game:
                 # TODO: Within the game code, set Game.state = "Result"
 
                 if command == 'PlayingLose':
+                    pygame.quit()
                     self.state = 'Result'
                     print('You won!')
                     print()
