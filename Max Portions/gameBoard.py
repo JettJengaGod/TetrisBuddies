@@ -12,7 +12,7 @@ class gameBoard():
         self.sS = 32
         self.grid = cells(self.col,self.row)
         self.current = self.grid.next.moveIn()
-        self.grid.next = block()
+        self.grid.nextBlocks(self.current)
         self.quit = False
         # initialize the pygame module
         pygame.init()
@@ -36,6 +36,8 @@ class gameBoard():
         self.drawBlock(self.current) #draws current block
         self.drawGhost(self.current)
         self.drawBlock(self.grid.next)
+        self.drawBlock(self.grid.next0)
+        self.drawBlock(self.grid.next1)
         if(self.saved!=None):
             self.drawBlock(self.saved)
         self.drawgrid(self.grid)

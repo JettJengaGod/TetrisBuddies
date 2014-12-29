@@ -11,6 +11,8 @@ class cells:
         self.row = row
         self.lose = False
         self.next = block()
+        self.next0 = None
+        self.next1 = None
         self.swapped = False
         image = ("block7.png")
         self.default = image
@@ -47,6 +49,23 @@ class cells:
                         self.image[x][b]=self.default
                     if b == self.row-1 and x == r:
                         self.filled[x][b] = 0
+    
+    def nextBlocks(self,blk):
+        self.next = block()
+        while self.next._arrangement == blk._arrangement:
+            self.next = block()
+        self.next.x = 11
+        self.next.y = 1
+        self.next0 = block()
+        while self.next0._arrangement == self.next._arrangement:
+            self.next0 = block()
+        self.next0.x = 11
+        self.next0.y = 6
+        self.next1 = block()
+        while self.next1._arrangement == self.next0._arrangement:
+            self.next1 = block()
+        self.next1.x = 11
+        self.next1.y = 11
                         
     def place(self,blk):
         self.swapped = False
@@ -57,10 +76,8 @@ class cells:
                     self.image[blk.x+x][blk.y+y]=blk.image
         self.rowFilled()
         blk = self.next.moveIn()
-        prevBlock = blk._arrangement
-        self.next = block()
-        while self.next._arrangement == prevBlock:
-            self.next = block()
+        self.nextBlocks(blk)
+        print(self.next, self.next0, self.next1)
         for x in range (self.col):
             if(self.filled[x][0]):
                 self.lose = True
