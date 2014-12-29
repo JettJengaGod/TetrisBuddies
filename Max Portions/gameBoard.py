@@ -13,12 +13,13 @@ class gameBoard():
         self.grid = cells(self.col,self.row)
         self.current = self.grid.next.moveIn()
         self.grid.next = block()
+        self.quit = False
         # initialize the pygame module
         pygame.init()
         # load and set the logo
         pygame.display.set_caption("TetrisBuddies")
         # create a surface on screen that has the size of 240 x 180
-        self.screen = pygame.display.set_mode(((self.col+6)*self.sS,self.row*self.sS))
+        self.screen = pygame.display.set_mode(((self.col*2+6)*self.sS,self.row*self.sS))
         # define a variable to control the main loop
         self.running = True
         self.keys = [False, False, False, False,False, False,False,False]
@@ -37,7 +38,7 @@ class gameBoard():
         self.drawBlock(self.grid.next)
         if(self.saved!=None):
             self.drawBlock(self.saved)
-        self.drawgrid()
+        self.drawgrid(self.grid)
         pygame.display.flip() #updates self.screen
     def drawBlock(self,blk):
         image = pygame.image.load(blk.image)
@@ -60,11 +61,11 @@ class gameBoard():
             for y in range(0,4):
                 if ghostBlock.array[x][y]:
                     self.screen.blit(image,((x+ghostBlock.x)*self.sS,(ghostBlock.y+y)*self.sS))
-    def drawgrid(self):
+    def drawgrid(self,grid):
         for x in range (self.col):
             for y in range(self.row+1):
-                if self.grid.filled[x][y]:
-                    image = pygame.image.load(self.grid.image[x][y])
+                if grid.filled[x][y]:
+                    image = pygame.image.load(grid.image[x][y])
                     image.set_alpha(255)
                     self.screen.blit((image),(x*self.sS,y*self.sS))
     def hardDrop(self,blk):
@@ -121,6 +122,8 @@ class gameBoard():
         return True
 
     def run(self):
+        if self.quit:
+            return
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -174,6 +177,9 @@ class gameBoard():
             self.current = self.grid.next.moveIn()
             self.grid.next = block()
             self.grid.addLines(1)
+            pygame.quit()
+            self.quit=True
+            return
             self.keys[5] = False
         elif self.keys[6]:
             self.current = self.hardDrop(self.current)
