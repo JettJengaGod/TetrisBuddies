@@ -12,6 +12,17 @@ def main():
     row = 20
     sS = 32
     grid = cells(col,row)
+    def update():
+        screen.fill((55,55,55)) #clear screen
+        bkg =pygame.image.load("MaxFaggotry.png")
+        screen.blit(bkg,(col*sS,0))
+        drawBlock(current) #draws current block
+        drawGhost(current)
+        drawBlock(grid.next)
+        if(saved!=None):
+            drawBlock(saved)
+        drawgrid()
+        pygame.display.flip() #updates screen
     def drawBlock(blk):
         blk.image.set_alpha(255)
         for x in range(0,4):
@@ -101,16 +112,6 @@ def main():
     grav = gravity(1000,5)
     saved = None
     while running:
-        screen.fill((55,55,55)) #clear screen
-        bkg =pygame.image.load("MaxFaggotry.png")
-        screen.blit(bkg,(col*sS,0))
-        drawBlock(current) #draws current block
-        drawGhost(current)
-        drawBlock(grid.next)
-        if(saved!=None):
-            drawBlock(saved)
-        drawgrid()
-        pygame.display.flip() #updates screen
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -182,6 +183,7 @@ def main():
                 grid.swapped = True
             keys[7]=False
         current = grav.fall(current,grid)
+        update()
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
 if __name__=="__main__":
