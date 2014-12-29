@@ -179,7 +179,7 @@ class Game:
 
         # If hosting
         elif self.state == 'Hosting':
-            print("Waiting for challengers... 'Esc' to leave")
+            print("Waiting for challenger... 'Esc' to leave")
 
             # Block until we receive a challengeRequest
             # The message thread will spit out an exception here that we
@@ -288,7 +288,6 @@ class Game:
                     print('Switched state to Result')
                     print('Instructions:')
                     if self.isHost:
-                        print("'Enter' to play again")
                         print("'Esc' to leave as host")
                     else:
                         print("'c' to challenge host")
@@ -301,7 +300,6 @@ class Game:
                     print('Switched state to Result')
                     print('Instructions:')
                     if self.isHost:
-                        print("'Enter' to play again")
                         print("'Esc' to leave as host")
                     else:
                         print("'c' to challenge host")
@@ -310,7 +308,7 @@ class Game:
 
         elif self.state == 'Result':
             if self.isHost:
-                print("Play again? 'Enter' to play, 'Esc' to leave")
+                print("Waiting for challenger... 'Esc' to leave")
 
                 # Block until we receive a challengeRequest
                 # The message thread will spit out an exception here that we
@@ -333,17 +331,6 @@ class Game:
                                 print("'v' to view available rooms")
                                 print("'0', '1', '2', ... to join a room number")
 
-                                return
-
-                            elif ascii == 13:
-                                # Tells the challenger that you are restarting the game
-                                response = ['ResultReplay']
-                                packet = pickle.dumps(response)
-                                Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
-                                # print('Sent packet', response, Global.opponent.getAddr())
-
-                                self.connectionClock.tick()
-                                self.state = 'Playing'
                                 return
 
                 except KeyboardInterrupt:
@@ -387,21 +374,7 @@ class Game:
                             # print('Sent packet', response, addr[0])
 
             else:
-                try:
-                    key = input("Enter a command: ")
-                except KeyboardInterrupt:
-                    # Block until we get the right message in the queue
-                    while Global.NetworkManager.getMessageQueue():
-                        Global.NetworkManager.getMessageLock().acquire()
-                        data, addr = Global.NetworkManager.getMessageQueue().popleft()
-                        Global.NetworkManager.getMessageLock().release()
-
-                        command = data[0]
-
-                        if command == 'ResultReplay':
-                            self.state = 'Playing'
-                            return
-                    
+                key = input("Enter a command: ")
                 print()
                 
                 # Challenge host

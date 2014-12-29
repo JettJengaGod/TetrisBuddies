@@ -22,7 +22,6 @@ data[0] = command
     HostingReject - Tells the joining receiver that the host rejected challenge
 
     ResultChallenge - Tells the host receiver that the sender is attempting to challenge again
-    ResultReplay - Tells the challenging receiver that the host has started a new game
     ResultAccept - Tells the challenging receiver that the host accepted challenge
     ResultReject - Tells the challenging receiver that the host rejected challenge
 '''
@@ -122,13 +121,6 @@ class NetworkManager:
             elif command == 'LobbyChallenge':
                 # If the current player is hosting
                 if Global.Game.getState() == 'Hosting':
-                    self.messageQueue.append((data, addr))
-                    _thread.interrupt_main()
-
-            # If he gets a join request, then move to challenge
-            elif command == 'ResultReplay':
-                # If the current player is hosting
-                if Global.Game.getState() == 'Result' and not Global.Game.getIsHost():
                     self.messageQueue.append((data, addr))
                     _thread.interrupt_main()
 
