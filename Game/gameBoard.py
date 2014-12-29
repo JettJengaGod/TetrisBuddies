@@ -88,8 +88,9 @@ class gameBoard():
         while 1:
             if(self.grid.checkCol(blk)):
                 blk = self.grid.place(blk)
+                Global.SoundManager.playsound('harddrop')
                 return blk
-            blk.y+=1  
+            blk.y+=1
     def sideCol(self,blk,side):
         for a in range (4):
             for b in range (4):
@@ -143,7 +144,7 @@ class gameBoard():
         # event handling, gets all event from the eventqueue
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key==pygame.K_w or event.key==pygame.K_UP:
+                if event.key==pygame.K_t or event.key==pygame.K_z:
                     self.keys[0]=True
                 elif event.key==pygame.K_s or event.key==pygame.K_DOWN:
                     self.keys[1]=True
@@ -151,13 +152,13 @@ class gameBoard():
                     self.keys[2]=True
                 elif event.key==pygame.K_d or event.key==pygame.K_RIGHT:
                     self.keys[3]=True
-                elif event.key==pygame.K_t:
+                elif event.key==pygame.K_w or event.key==pygame.K_UP:
                     self.keys[4]=True
                 elif event.key==pygame.K_r:
                     self.keys[5]=True
                 elif event.key==pygame.K_SPACE:
                     self.keys[6]=True
-                elif event.key==pygame.K_c:
+                elif event.key==pygame.K_c or event.key==pygame.K_LSHIFT:
                     self.keys[7]=True
             # only do something if the event is of type QUIT
             elif event.type == pygame.QUIT:
@@ -207,6 +208,7 @@ class gameBoard():
                 self.current = self.grid.next.moveIn()
                 self.grid.next = block()
                 self.grid.swapped = True
+                Global.SoundManager.playsound('switch')
             elif self.grid.swapped==False:
                 temp = self.current
                 self.current = self.saved.moveIn()
@@ -214,6 +216,7 @@ class gameBoard():
                 self.current.y = 1
                 self.saved = temp.save()
                 self.grid.swapped = True
+                Global.SoundManager.playsound('switch')
             self.keys[7]=False
         self.current = self.grav.fall(self.current,self.grid)
         self.update()
@@ -236,10 +239,12 @@ class gameBoard():
                 print("'c' to challenge host")
                 print("'l' to leave to lobby")
             return
-
+'''
 if __name__ == '__main__':    
     g = gameBoard()
     while True:
         g.run()
+'''
+
 
 
