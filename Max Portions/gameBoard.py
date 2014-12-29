@@ -183,10 +183,10 @@ class gameBoard():
                 self.grid.swapped = True
             elif self.grid.swapped==False:
                 temp = self.current
-                self.current = saved.moveIn()
+                self.current = self.saved.moveIn()
                 self.current.x = 1
                 self.current.y = 1
-                saved = temp.save()
+                self.saved = temp.save()
                 self.grid.swapped = True
             self.keys[7]=False
         self.current = self.grav.fall(self.current,self.grid)
