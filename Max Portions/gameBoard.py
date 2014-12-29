@@ -4,9 +4,8 @@ import block2
 from block2 import block
 from gravity2 import gravity
 from cells import cells
-# define a main function
 
-def main():
+def gameBoard():
     
     col = 10
     row = 20
@@ -187,6 +186,3 @@ def main():
         update()
 # run the main function only if this module is executed as the main script
 # (if you import this as a module then nothing is executed)
-if __name__=="__main__":
-    # call the main function
-    main()
