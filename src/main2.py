@@ -163,6 +163,7 @@ def main():
         elif keys[5]:
             current = grid.next.moveIn()
             grid.next = block()
+            grid.addLines(1)
             keys[5] = False
         elif keys[6]:
             current = hardDrop(current)
