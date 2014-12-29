@@ -126,6 +126,12 @@ class NetworkManager:
                     _thread.interrupt_main()
 
             # If he gets a join request, then move to challenge
+            elif command == 'ResultReplay':
+                # If the current player is hosting
+                if Global.Game.getState() == 'Result' and not Global.Game.getIsHost():
+                    Global.Game.setState('Playing')
+
+            # If he gets a join request, then move to challenge
             elif command == 'ResultChallenge':
                 # If the current player is hosting
                 if Global.Game.getState() == 'Result':

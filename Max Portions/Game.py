@@ -42,6 +42,7 @@ class Game:
     def getRoomList(self): return self.roomList
     def getState(self): return self.state
     def getIsRunning(self): return self.isRunning
+    def getIsHost(self): return self.isHost
 
     # Setters
     def setState(self, newState): self.state = newState
@@ -343,6 +344,7 @@ class Game:
 
                                 self.connectionClock.tick()
                                 self.state = 'Playing'
+                                return
 
                 except KeyboardInterrupt:
                     validInput = False
