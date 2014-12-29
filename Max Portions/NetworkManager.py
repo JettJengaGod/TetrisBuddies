@@ -129,7 +129,8 @@ class NetworkManager:
             elif command == 'ResultReplay':
                 # If the current player is hosting
                 if Global.Game.getState() == 'Result' and not Global.Game.getIsHost():
-                    Global.Game.setState('Playing')
+                    self.messageQueue.append((data, addr))
+                    _thread.interrupt_main()
 
             # If he gets a join request, then move to challenge
             elif command == 'ResultChallenge':

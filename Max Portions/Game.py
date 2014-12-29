@@ -387,7 +387,21 @@ class Game:
                             # print('Sent packet', response, addr[0])
 
             else:
-                key = input("Enter a command: ")
+                try:
+                    key = input("Enter a command: ")
+                except KeyboardInterrupt:
+                    # Block until we get the right message in the queue
+                    while Global.NetworkManager.getMessageQueue():
+                        Global.NetworkManager.getMessageLock().acquire()
+                        data, addr = Global.NetworkManager.getMessageQueue().popleft()
+                        Global.NetworkManager.getMessageLock().release()
+
+                        command = data[0]
+
+                        if command == 'ResultReplay':
+                            self.state = 'Playing'
+                            return
+                    
                 print()
                 
                 # Challenge host
