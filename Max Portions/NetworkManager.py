@@ -21,6 +21,12 @@ data[0]: command
 
     HostingAccept - Tells the joining receiver that the host accepted challenge
     HostingReject - Tells the joining receiver that the host rejected challenge
+
+    ResultLeave - Tells the receiver that the sender left to the lobby
+    ResultChallenge - Tells the host receiver that the sender is attempting to challenge again
+    ResultReplay - Tells the challenging receiver that the host has started a new game
+    ResultAccept - Tells the challenging receiver that the host accepted challenge
+    ResultReject - Tells the challenging receiver that the host rejected challenge
 '''
 
 # Handles basically all the networking things
@@ -114,6 +120,20 @@ class NetworkManager:
             elif command == 'LobbyChallenge':
                 # If the current player is hosting
                 if Global.Game.getState() == 'Hosting':
+                    self.messageQueue.append((data, addr))
+                    _thread.interrupt_main()
+
+            # If he gets a join request, then move to challenge
+            elif command == 'ResultChallenge':
+                # If the current player is hosting
+                if Global.Game.getState() == 'Result':
+                    self.messageQueue.append((data, addr))
+                    _thread.interrupt_main()
+
+            # If he gets a leave notification, quit from result
+            elif command == 'ResultLeave':
+                # If the current player is hosting
+                if Global.Game.getState() == 'Result':
                     self.messageQueue.append((data, addr))
                     _thread.interrupt_main()
 

@@ -178,7 +178,7 @@ class Game:
 
         # If hosting
         elif self.state == 'Hosting':
-            print("Waiting for challengers, 'Esc' to leave...")
+            print("Waiting for challengers... 'Esc' to leave")
 
             # Block until we receive a challengeRequest
             # The message thread will spit out an exception here that we
@@ -274,9 +274,6 @@ class Game:
             Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
             print('Sent packet', response, Global.opponent.getAddr())
 
-            data = None
-            addr = None
-
             # If we have a PlayingWin or PlayingLose message, then we deal with it here
             while Global.NetworkManager.getMessageQueue():
                 Global.NetworkManager.getMessageLock().acquire()
@@ -308,9 +305,185 @@ class Game:
                         print("'Enter' to play again")
                         print("'Esc' to leave as host")
                     return
-                else:
-                    continue
 
         elif self.state == 'Result':
-            while True:
-                pass
+            if isHost:
+                print("Play again? 'Enter' to play, 'Esc' to leave")
+
+                # Block until we receive a challengeRequest
+                # The message thread will spit out an exception here that we
+                # will then catch
+                try:
+                    while True:
+                        if msvcrt.kbhit():
+                            ascii = ord(msvcrt.getch())
+
+                        # Escape key
+                        if ascii == 27:
+                            response = ['ResultLeave']
+                            packet = pickle.dumps(response)
+                            Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
+                            print('Sent packet', response, addr[0])
+
+                            self.state = 'Lobby'
+                            self.isHost = False
+                                    
+                            print('You left as host')
+                            print()
+                            print("Changed state to Lobby")
+                            print("Instructions:")
+                            print("'h' to host a room")
+                            print("'v' to view available rooms")
+                            print("'0', '1', '2', ... to join a room number")
+
+                            return
+
+                        elif ascii == 13:
+                            # Tells the challenger that you are restarting the game
+                            response = ['ResultReplay']
+                            packet = pickle.dumps(response)
+                            Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                            print('Sent packet', response, Global.opponent.getAddr())
+
+                            self.state = 'Playing'
+
+                except KeyboardInterrupt:
+                    validInput = False
+
+                    data = None
+                    addr = None
+
+                    # Block until we get the right message in the queue
+                    while Global.NetworkManager.getMessageQueue():
+                        Global.NetworkManager.getMessageLock().acquire()
+                        data, addr = Global.NetworkManager.getMessageQueue().popleft()
+                        Global.NetworkManager.getMessageLock().release()
+
+                        command = data[0]
+
+                        if command == 'ResultLeave':
+                            self.state = 'Hosting'
+
+                            print('Lost connection, challenger left')
+                            print()
+                            print('Changed state to Lobby')
+                            print("Instructions:")
+                            print("'h' to host a room")
+                            print("'v' to view available rooms")
+                            print("'0', '1', '2', ... to join a room number")
+
+                            return
+                        elif not command == 'ResultChallenge':
+                            continue
+
+                    while not validInput:
+                        response = input('Accept challenge by ' + data[1] + ' (y/n)? ')
+                        if response == 'y':
+                            validInput = True
+                            response = ['ResultAccept']
+                            packet = pickle.dumps(response)
+                            Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
+                            print('Sent packet', response, addr[0])
+
+                            self.connectionClock = pygame.time.Clock()
+                            self.connectionClock.tick()
+
+                            self.state = 'Playing'
+                            Global.opponent.setName(data[1])
+                            Global.opponent.setAddr(addr[0])
+
+                        elif response == 'n':
+                            validInput = True
+                            response = ['ResultReject']
+                            packet = pickle.dumps(response)
+                            Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
+                            print('Sent packet', response, addr[0])
+
+            else:
+                key = input("Enter a command: ")
+                print()
+                
+                # Challenge host
+                if key == 'c':
+                    # Block and wait for other side to respond
+                    self.clock.tick()
+                    timer = 0
+
+                    response = ['ResultChallenge']
+                    packet = pickle.dumps(response)
+                    Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                    print('Sent packet', response, Global.opponent.getAddr())
+
+                    # Will poll for a message back, with a TTL of 5 seconds (5000 milliseconds)
+                    while timer <= 10000:
+                        timer += self.clock.tick()
+                        while Global.NetworkManager.getMessageQueue():
+                            Global.NetworkManager.getMessageLock().acquire()
+                            data, addr = Global.NetworkManager.getMessageQueue().popleft()
+                            Global.NetworkManager.getMessageLock().release()
+
+                            command = data[0]
+
+                            # If host rejects, then we just return to lobby activity
+                            if command == 'ResultReject':
+                                self.state = 'Lobby'
+
+                                print('The host rejected your challenge')
+                                print()
+                                return
+                            # Else we start playing the game
+                            elif command == 'ResultAccept':
+                                print('The host accepted your challenge')
+                                print()
+
+                                self.connectionClock = pygame.time.Clock()
+                                self.connectionClock.tick()
+                                self.state = 'Playing'
+                                return
+                            else:
+                                continue
+
+                    print('Challenge request timed out')
+               
+                elif key == 'l':
+                    self.state = 'Lobby'
+                    response = ['ResultLeave']
+                    packet = pickle.dumps(response)
+                    Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                    print('Sent packet', response, Global.opponent.getAddr())
+                    
+                    print('You left the room')
+                    print()
+                    print('Changed state to Lobby')
+                    print("Instructions:")
+                    print("'h' to host a room")
+                    print("'v' to view available rooms")
+                    print("'0', '1', '2', ... to join a room number")
+
+                else:
+                    print('Invalid command')
+                    print()
+                    print("Instructions:")
+                    print("'c' to challenge host")
+                    print("'l' to leave to lobby")
+                
+                # Block until we get the right message in the queue
+                while Global.NetworkManager.getMessageQueue():
+                    Global.NetworkManager.getMessageLock().acquire()
+                    data, addr = Global.NetworkManager.getMessageQueue().popleft()
+                    Global.NetworkManager.getMessageLock().release()
+
+                    command = data[0]
+
+                    if command == 'ResultLeave':
+                        self.state = 'Lobby'
+
+                        print('Lost connection, host left')
+                        print()
+                        print('Changed state to Lobby')
+                        print("Instructions:")
+                        print("'h' to host a room")
+                        print("'v' to view available rooms")
+                        print("'0', '1', '2', ... to join a room number")
+
+                        return
