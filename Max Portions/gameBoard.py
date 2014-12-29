@@ -82,9 +82,11 @@ class gameBoard():
         return False
     def flipNudge(self,blk, LR):
         if(blk._arrangement == block2.block_Sq):
-            return
+            return False
         temp = blk.clone()
         temp.rotate(LR)
+        if self.sideCol(temp,-1) == True and self.sideCol(temp,1) == True:
+            return False
         while temp.x < 0:
             temp.x+=1
             blk.x+=1
@@ -101,8 +103,6 @@ class gameBoard():
                         temp.x -= 1
                     if temp._arrangement == block2.block_S:
                         temp.x -= 1
-        if self.sideCol(temp,-1) == True and self.sideCol(temp,1) == True:
-            return 'GG'
         if self.sideCol(temp,0) == True:
             for x in range(4):
                 for y in range(4):
@@ -118,7 +118,7 @@ class gameBoard():
                     if self.grid.filled[temp.x+a][temp.y + b]:
                         blk.y -= 1
                         break
-        return None
+        return True
 
     def run(self):
         # event handling, gets all event from the eventqueue
@@ -146,8 +146,8 @@ class gameBoard():
                 running = False
 
         if self.keys[0]:
-            self.flipNudge(self.current,"R")
-            self.current.rotate('R')
+            if self.flipNudge(self.current,"R") != False:
+                self.current.rotate('R')
             self.keys[0]=False
         elif self.keys[1]:
             if self.grid.checkCol(self.current)==False:
@@ -167,8 +167,8 @@ class gameBoard():
                 self.current.x+=1
             self.keys[3]=False
         elif self.keys[4]:
-            self.flipNudge(self.current,"L")
-            self.current.rotate('L')
+            if self.flipNudge(self.current,"L") != False:
+                self.current.rotate('L')
             self.keys[4]=False
         elif self.keys[5]:
             self.current = self.grid.next.moveIn()
@@ -195,7 +195,8 @@ class gameBoard():
             self.keys[7]=False
         self.current = self.grav.fall(self.current,self.grid)
         self.update()
-'''
+        
 g = gameBoard()
-g.run()
-'''
+while True:
+    g.run()
+
