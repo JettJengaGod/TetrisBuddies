@@ -322,8 +322,8 @@ class Game:
                             if ascii == 27:
                                 response = ['ResultLeave']
                                 packet = pickle.dumps(response)
-                                Global.NetworkManager.getSocket().sendto(bytes(packet), addr)
-                                print('Sent packet', response, addr[0])
+                                Global.NetworkManager.getSocket().sendto(bytes(packet), (Global.opponent.getAddr(), 6969))
+                                print('Sent packet', response, Global.opponent.getAddr())
                                 
                                 self.state = 'Lobby'
                                 self.isHost = False
